@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Samuel Marques
-  version: 1.0.0
+  version: 2.0.0
 ---
 
 # Plan Executor Skill
@@ -55,7 +55,8 @@ or the user wants subagent-driven execution (use `intent-ops:task-runner` instea
    - **Story key** — e.g. `PROJ-1234` (used as the feature branch name: `feature/PROJ-1234`)
    - **Task ID mapping** — e.g. `Task 1 → PROJ-1235`, `Task 2 → PROJ-1236`
    If no Jira context was passed, commits will use conventional format without a subtask prefix.
-3. Read the full plan: goal, architecture, tech stack, and all tasks with their steps.
+3. Read the full plan: goal, architecture, tech stack, the Impact Analysis and Architecture
+   Decisions tables, and all tasks with their steps, intents, tiers, and contracts.
 4. Review critically — before starting, surface any concerns:
    - Missing dependencies or unclear steps?
    - References to types or methods not defined elsewhere in the plan?
@@ -86,11 +87,22 @@ Execute tasks sequentially, in the order defined by the plan.
 For each task:
 
 1. Mark the task as **in progress**.
-2. TDD, no exceptions (`intent-ops:tdd-guide` has model-invocation disabled, so its hard-gate
-   is restated here rather than loaded): write one failing test for the behavior, run it and
-   confirm it fails for the right reason, then write the minimal code to pass it, then refactor
-   only once green. Production code written before its test gets deleted, not kept "for
-   reference."
+2. Observed red, no exceptions (`intent-ops:tdd-guide` has model-invocation disabled, so its
+   hard-gate is restated here rather than loaded): for each behavior, write the test, run it and
+   confirm it fails **for the right reason** — behavior missing, not a typo or broken setup —
+   then implement it correctly, then re-run. Nothing gets committed on a test that has only ever
+   been green.
+   - **Step size follows the task's test-first tier.** Tier 1 (domain rules, validation,
+     calculations, state transitions, bug fixes): one behavior per cycle. Tier 2 (task introduces
+     a new component or boundary): settle the contract first — interfaces and signatures, no
+     method bodies — then Tier 1 per behavior. Tier 3 (wiring, pure delegation): one test that
+     was seen to fail may cover several elements. If the task declares no tier, treat it as Tier 1.
+   - **Implement correctly, not crudely.** "Minimal" means no parameters, options, abstractions,
+     or error handling that no acceptance criterion asked for. It does not mean writing code you
+     already know you will rewrite on the next cycle.
+   - **A green bar is not authority to decide architecture.** If a cycle reveals that an
+     invariant's owner, a dependency direction, or a contract shape is wrong, stop and ask — do
+     not reshape it inside a refactor step.
 3. Follow every step in the task exactly — do not skip steps, verifications, or commits.
 4. Run each verification command listed and confirm the expected output matches.
 5. Commit at the checkpoint specified by the plan. Use the following format:
@@ -116,7 +128,8 @@ before marking the task complete — this is a normal file edit, no skill invoca
 - A dependency is missing or a test fails unexpectedly
 - An instruction is unclear or contradicts a prior task
 - A verification fails repeatedly despite a correct-looking implementation
-- The plan has a gap requiring an undocumented architectural decision
+- The plan has a gap requiring an architectural decision its Architecture Decisions table
+  does not cover
 
 Never guess, adapt, or force through blockers. Pause and ask.
 
@@ -137,8 +150,12 @@ user runs it.
 ## Key Principles
 
 - **Plan is the source of truth.** Follow it exactly — do not improvise.
-- **TDD always.** Failing test before any production code, every task — the hard-gate is
-  restated in Phase 2 since `intent-ops:tdd-guide` has model-invocation disabled.
+- **Observed red always.** Every behavior gets a test that was run and seen to fail before the
+  code satisfying it existed — the hard-gate is restated in Phase 2 since
+  `intent-ops:tdd-guide` has model-invocation disabled. The task's tier sets the step size,
+  never whether the red happens.
+- **Design decisions escalate.** Contracts and boundaries come from the plan's Architecture
+  Decisions section. If one is missing or wrong, stop — do not decide it mid-cycle.
 - **One task at a time.** Never skip ahead or execute tasks in parallel.
 - **Stop when blocked.** Do not guess, adapt, or force through failures.
 - **Isolation first.** Always verify worktree before writing any code.

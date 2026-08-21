@@ -1,13 +1,13 @@
 ---
 name: plan-writer
-description: 'Write a formal PLAN.md from an approved SPEC.md. Use when the user wants an implementation plan — "write the plan", "plan this out", "plan the implementation". Decomposes work into TDD tasks. Not for spec authoring, bug fixes without a spec, or post-approval execution.'
+description: 'Write a formal PLAN.md from an approved SPEC.md. Use when the user wants an implementation plan — "write the plan", "plan this out", "plan the implementation". Decomposes work into behavior-sized, test-first tasks. Not for spec authoring, bug fixes without a spec, or post-approval execution.'
 license: MIT
 disable-model-invocation: true
 derived_from: 'obra/superpowers — writing-plans'
 source_url: 'https://github.com/obra/superpowers/blob/main/skills/writing-plans/SKILL.md'
 metadata:
   author: Samuel Marques
-  version: 1.0.0
+  version: 2.0.0
 ---
 
 # Plan Writer Skill
@@ -17,8 +17,13 @@ metadata:
 
 
 Produce a formal, implementation-ready PLAN.md from an approved SPEC.md, decomposed
-into bite-sized TDD tasks with exact file paths, complete code, and expected test output — so
-any engineer can execute it without codebase context.
+into behavior-sized, test-first tasks with exact file paths, fixed contracts, acceptance criteria,
+and expected test output — so any engineer can execute it without codebase context.
+
+**The plan decides what and where; the implementer decides how, inside the contracts the plan
+fixed.** A plan that pre-writes every method body is an implementation transcribed into markdown:
+it goes stale on first contact with the codebase, and it burns the only phase dedicated to
+architecture on typing code.
 
 ---
 
@@ -224,6 +229,40 @@ Ask:
 > "Does this file breakdown look right? Any files missing or responsibilities that should
 > be merged or split further?"
 
+Wait for confirmation before proceeding to Phase 3.5.
+
+---
+
+### Phase 3.5 — Architecture Gate
+
+**Decomposition into tasks is not architecture.** Phase 1.5 mapped what the change *touches*;
+this phase decides *how the change is shaped*. Both come before tasks, because a task list
+written without these decisions forces the implementer to make them one green bar at a time —
+which is how a shape nobody chose gets built.
+
+Decide, and present as a table for confirmation:
+
+| Decision | What to settle |
+|----------|----------------|
+| **Invariant ownership** | Which type owns each business rule. Two types enforcing the same invariant is a defect, not redundancy. |
+| **Dependency direction** | What may depend on what. Name the architectural rule this respects — and if the change needs an exception, say so here. |
+| **Contract shape** | Public signatures, event payloads, API shapes, and their versioning/compatibility strategy. |
+| **Failure & transaction boundary** | Where errors surface to the caller, what is atomic, what is retryable. |
+
+```
+## Architecture Decisions (draft — please confirm)
+
+| Decision | Choice | Why | Alternative rejected |
+|----------|--------|-----|----------------------|
+| … | … | … | … |
+```
+
+For each decision, name the alternative you rejected and why. A decision with no rejected
+alternative was not a decision — it was a default, and defaults are where architecture erodes.
+
+This table becomes the plan's `## Architecture Decisions` section. Every contract settled here
+appears verbatim in the task that implements it, so no task has to invent one.
+
 Wait for confirmation before proceeding to Phase 4.
 
 ---
@@ -234,26 +273,45 @@ Write the plan using the structure in `references/plan-template.md`. Apply the l
 
 Load `references/plan-template.md` before writing — it contains the exact Plan Document Header and Task Structure templates that every plan must follow.
 
-#### Bite-Sized Step Granularity
+#### Task Granularity
 
-Each step is one action (2–5 minutes):
-- "Write the failing test" — step
-- "Run it to make sure it fails" — step
-- "Write the minimal code to make the test pass" — step
-- "Run the tests to confirm they pass" — step
-- "Commit" — step
+**A task is one cohesive unit of behavior** — one aggregate's rule set, one endpoint, one
+migration, one collaboration. The test: can you state the task's Intent in a single sentence?
+If it takes two, split it. If it takes half a sentence, merge it.
 
-Never combine "write and run" or "implement and test" into a single step.
+Within a task, the steps are the verification cycle, not a keystroke log:
+
+- Design pass (Tier 2 only — settle the contract, no method bodies)
+- Write the failing test for one acceptance criterion
+- Run it and confirm it fails for the right reason
+- Implement that criterion
+- Run the test and the suite — confirm green
+- Repeat for each remaining AC in the task
+- Commit
+
+Assign a **test-first tier** to every task (see `intent-ops:tdd-guide`): Tier 1 for domain
+rules, validation, calculations, state transitions, and bug fixes; Tier 2 when the task
+introduces a new component or boundary; Tier 3 only for wiring and pure delegation. Default to
+Tier 1 and justify anything else in the task.
+
+Never collapse "write the test" and "run it to see it fail" into one step — the observed red is
+the gate the whole cycle rests on.
 
 #### No Placeholders
 
 Every step must contain the actual content an engineer needs. These are **plan failures**:
 - "TBD", "TODO", "implement later", "fill in details"
 - "Add appropriate error handling" / "add validation" / "handle edge cases"
-- "Write tests for the above" (without actual test code)
+- "Write tests for the above" (without naming each test and its assertion)
 - "Similar to Task N" (repeat the code — the engineer may read tasks out of order)
-- Steps that describe what to do without showing how (code blocks required for code steps)
-- References to types, functions, or methods not defined in any task
+- A task with no Intent line, no test-first tier, or no acceptance criteria listed
+- A task that defines or changes a signature, event, or API shape without a Contract block
+- References to types, functions, or methods not defined in any task or contract
+
+These are **not** plan failures — do not add them:
+- Method bodies for behavior the AC and the contract already determine
+- Test bodies (name the test and state the assertion instead)
+- Boilerplate the codebase already has an established pattern for
 
 ---
 
@@ -265,13 +323,18 @@ Load `references/plan-reviewer-prompt.md` for the full review checklist.
 | Check | Question |
 |-------|----------|
 | Impact analysis done first | Was Phase 1.5 completed and its table included in the plan before file structure and tasks were decided? |
+| Architecture gate done | Was Phase 3.5 confirmed, with a rejected alternative named for each decision, before tasks were written? |
 | Spec coverage | Can you point to a task for every spec requirement? List any gaps. |
 | Placeholder scan | Any pattern from the "No Placeholders" section above? Fix them. |
 | Type consistency | Do method signatures and type names used in later tasks match earlier task definitions? |
 | File coverage | Every file from the Phase 3 structure appears in at least one task? |
 | Language | Is the chosen language applied uniformly? No mixed-language sentences. |
 | Ubiquitous language | Are only canonical glossary terms used — no retired aliases? |
-| Step granularity | Is each step truly one action (2–5 min)? Split anything larger. |
+| Task granularity | Can each task's Intent be stated in one sentence? Split or merge otherwise. |
+| Tier assignment | Does every task declare a test-first tier, with a justification for anything other than Tier 1? |
+| Contract coverage | Does every task that changes a signature, event, or API shape carry a Contract block traceable to Phase 3.5? |
+| AC traceability | Does every task list the spec ACs it covers, and does every AC appear in some task? |
+| Red step intact | Is "write the test" separate from "run it and confirm it fails" in every task? |
 | YAGNI | Any unrequested scope creep? Remove it. |
 
 Fix all issues before presenting.
@@ -363,9 +426,14 @@ NOT attempt to invoke either skill yourself — surface the command and stop.
 ## Key Principles
 
 - **Impact before decomposition.** Analyze what the change affects — bounded contexts, contracts, architectural rules, deploy risk — before deciding what files or tasks to create. Doing this in the opposite order turns retrofitting into the plan's design process.
-- **Concrete over abstract.** Every step shows exact code, exact commands, exact expected output.
+- **Architecture before decomposition.** Invariant ownership, dependency direction, contracts,
+  and failure boundaries are settled in Phase 3.5 — not discovered by the implementer mid-task.
+- **Concrete where it decides something.** Exact paths, exact contracts, exact commands, exact
+  expected output. Not exact method bodies — the plan fixes the shape, the implementer fills it.
 - **One question at a time.** Never overwhelm the user.
-- **TDD always.** Write the failing test before the implementation — every task, every time.
+- **Observed red always.** Every behavior gets a test that was run and seen to fail before the
+  code satisfying it existed — every task, every time. Tier choice sets the step size, never
+  whether the red happens.
 - **Approval required.** The HARD-GATE is unconditional.
 - **Spec is the source of truth.** Every requirement in the spec must map to a task.
 - **Ubiquitous language.** Use only canonical terms from the spec's confirmed glossary.
@@ -379,7 +447,7 @@ NOT attempt to invoke either skill yourself — surface the command and stop.
 ### Example 1: Single-scope plan
 
 User says: "The spec is approved — can you write the implementation plan for PROJ-1234?"
-Actions: Phase 0 (locate and read SPEC.md) → Phase 0.5 (plan language) → Phase 1 (single scope confirmed) → Phase 1.5 (impact analysis — bounded contexts, contracts, architectural rules, deploy risks, confirm) → Phase 0.7 (codebase pre-read, answer architecture questions from code) → Phase 2 (architecture interview, only what the codebase didn't answer) → Phase 3 (file structure proposal, confirm) → Phase 4 (author PLAN.md) → Phase 5 (self-review) → Phase 6 (HARD-GATE: present and wait for explicit approval) → Phase 7 (save to `docs/plans/PROJ-1234-*.md`, offer spec update).
+Actions: Phase 0 (locate and read SPEC.md) → Phase 0.5 (plan language) → Phase 1 (single scope confirmed) → Phase 1.5 (impact analysis — bounded contexts, contracts, architectural rules, deploy risks, confirm) → Phase 0.7 (codebase pre-read, answer architecture questions from code) → Phase 2 (architecture interview, only what the codebase didn't answer) → Phase 3 (file structure proposal, confirm) → Phase 3.5 (architecture gate — invariant ownership, dependency direction, contracts, failure boundaries, confirm) → Phase 4 (author PLAN.md) → Phase 5 (self-review) → Phase 6 (HARD-GATE: present and wait for explicit approval) → Phase 7 (save to `docs/plans/PROJ-1234-*.md`, offer spec update).
 Result: PLAN.md on disk. No execution until the user explicitly approves.
 
 ### Example 2: Multi-scope decomposition

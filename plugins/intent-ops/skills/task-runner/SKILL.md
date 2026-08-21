@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Samuel Marques
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Task Runner Skill
@@ -208,8 +208,10 @@ All in `references/`:
 - **Sequential tasks.** Never dispatch multiple implementers in parallel.
 - **Stop when blocked.** Never force through BLOCKED status without change.
 - **Isolation first.** Worktree before any code.
-- **TDD always.** Implementer subagents carry the TDD hard-gate inline in
-  `references/implementer-prompt.md` — failing test before any production code, every task.
+- **Observed red always.** Implementer subagents carry the hard-gate inline in
+  `references/implementer-prompt.md` — every behavior gets a test that was run and seen to fail
+  before the code satisfying it existed. The task's test-first tier sets the step size, never
+  whether the red happens.
   (`intent-ops:tdd-guide` has model-invocation disabled, so subagents can't load it themselves —
   the gate is embedded in the prompt template instead.)
 

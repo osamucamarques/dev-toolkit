@@ -15,7 +15,7 @@ or one you authored across several sessions — dispatch the prompt block as a s
 Task tool (general-purpose):
   description: "Review plan document"
   prompt: |
-    Review a TDD implementation plan for executability. You are the last gate before
+    Review a test-first implementation plan for executability. You are the last gate before
     subagents start writing code from it.
 
     **Plan:** [PLAN_FILE_PATH]
@@ -34,18 +34,28 @@ Task tool (general-purpose):
 
     ## Pass 1 — task mechanics
 
-    Each task must carry the full five-step TDD cycle, in order, with nothing implied:
+    Each task must carry these, with nothing implied:
 
-    | Step | Must contain |
-    |------|--------------|
-    | 1 Write failing test | Real test code, not a description of a test |
-    | 2 Verify FAIL | The exact command to run, plus the failure output expected |
-    | 3 Minimal implementation | Real code — enough to pass, no more |
-    | 4 Verify PASS | The exact command, plus the passing result expected |
-    | 5 Commit | Concrete `git add` paths and the commit message |
+    | Element | Must contain |
+    |---------|--------------|
+    | Intent | One sentence: what behavior exists after this task that did not before |
+    | Test-first tier | 1, 2, or 3 — with a justification for anything other than 1 |
+    | Acceptance criteria | The spec AC ids this task covers |
+    | Contract | Interfaces, signatures, event payloads, or schema — required whenever the task defines or changes a shape; traceable to the plan's Architecture Decisions |
+    | Verification cycle | Write the test → run it and confirm it fails for the right reason → implement → run and confirm green, repeated per AC |
+    | Commit | Concrete `git add` paths and the commit message |
 
-    Flag: a missing step, steps out of order, a step 2 or step 4 with no command or no
-    expected output, and any code block that is prose or `// ...` where real code belongs.
+    For each test step: the test's name and its assertion must be stated, and the run step
+    must carry the exact command plus the failure expected. "Write the test" and "run it and
+    confirm it fails" must be separate steps — the observed red is the gate the cycle rests on.
+
+    Flag: a missing element, a task whose Intent takes more than one sentence, a shape-changing
+    task with no Contract, a run step with no command or no expected output, and any placeholder
+    where a decision belongs.
+
+    **Do not flag** the absence of method bodies or test bodies. The plan fixes contracts and
+    states assertions; the implementer writes the code. A plan that pre-writes every body is
+    over-specified, not thorough.
 
     Also check the **Files** block of each task: created paths must be exact, modified
     paths should carry line ranges, and the test path must correspond to the file under
@@ -74,11 +84,15 @@ Task tool (general-purpose):
     - Nothing in the plan is absent from the spec. Behavior the spec never asked for is
       scope creep — name it and quote it.
     - The Impact Analysis table holds real findings, not dashes.
+    - The Architecture Decisions table settles invariant ownership, dependency direction,
+      contract shape, and failure/transaction boundary — each with the alternative it rejected.
+      A decision left to the implementer is a blocking gap, not a detail.
 
     ## Severity
 
-    **Blocking** — would stop or misdirect an implementer: a missing TDD step, prose in
-    place of code, a placeholder (`TBD`, `TODO`, `implement later`, bare `...`), an
+    **Blocking** — would stop or misdirect an implementer: a missing verification step, a
+    collapsed test/run-it pair, a missing Intent, tier, AC list, or Contract, an unsettled
+    architecture decision, a placeholder (`TBD`, `TODO`, `implement later`, bare `...`), an
     unresolvable reference, a signature conflict, an uncovered requirement or AC, or scope
     the spec does not authorize.
 

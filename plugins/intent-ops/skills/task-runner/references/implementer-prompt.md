@@ -56,10 +56,32 @@ Task tool (general-purpose):
     ## Your Job
 
     Once you've worked through "Before You Begin" and any gap is resolved:
-    1. TDD, no exceptions: write one failing test for the behavior first, run it and confirm it
-       fails for the right reason (missing feature, not a typo), then write the minimal code to
-       make it pass, then refactor only once green. If you wrote production code before a test
-       for it — delete that code and start over; "keep as reference" is not an exception.
+    1. Observed red, no exceptions: for each behavior, write the test first, run it and confirm
+       it fails **for the right reason** (behavior missing — not a typo, import error, or broken
+       setup), then implement it, then re-run and confirm green. Nothing may be committed on a
+       test that has only ever been green. If you wrote production code before its test, set it
+       aside, write the test, watch it fail, then bring the implementation back — a test that
+       cannot be made to fail against that code is worthless and must be fixed.
+
+       **Step size follows this task's test-first tier** (stated in the task; if absent, assume
+       Tier 1):
+       - *Tier 1* — domain rules, validation, calculations, state transitions, bug fixes,
+         contract behavior: one behavior per red-green cycle, no batching.
+       - *Tier 2* — this task introduces a new component, boundary, or contract: settle the
+         design first (types and their invariants, public signatures, dependency direction,
+         failure/transaction boundary). Interfaces and signatures may be written; method bodies
+         may not. Report that design before the first test. Then Tier 1 per behavior.
+       - *Tier 3* — wiring, DI config, pure delegation with no logic: one test seen to fail may
+         cover several elements.
+
+       **Implement correctly, not crudely.** "Minimal" means no parameters, options,
+       abstractions, or error handling that no acceptance criterion asked for. It does not mean
+       writing code you already know you will rewrite on the next cycle — if you know the
+       correct shape for the behavior under test, write it.
+
+       **A green bar is not authority to decide architecture.** If a cycle reveals that an
+       invariant's owner, a dependency direction, or a contract shape is wrong, stop and
+       escalate — do not reshape it inside a refactor step.
     2. Implement the task, honoring every constraint in the Global and Domain context above — not
        just the literal task text
     3. Run all verifications listed in the task
@@ -117,7 +139,11 @@ Task tool (general-purpose):
 
     **Discipline:**
     - Did I avoid building things not requested (YAGNI)?
-    - Did I follow TDD — test first, then minimal implementation?
+    - Did every behavior have a test I actually watched fail, for the right reason, before the
+      code satisfying it existed?
+    - Would each of my tests still fail against an empty implementation?
+    - Did I stay within the tier's step size, and did Tier 2 work get its design pass first?
+    - Did I decide any architecture inside a green-bar cycle instead of escalating it?
     - Did I follow existing patterns in the codebase?
 
     **Testing:**

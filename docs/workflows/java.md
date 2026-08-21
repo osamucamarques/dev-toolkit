@@ -117,7 +117,8 @@ After spec approval, run `plan-writer` with the saved spec path:
 - **Phase 0.7:** reads the codebase before asking any questions — identifies relevant files, answers architecture questions from code, only asks the user what the code cannot answer
 - Runs an architecture interview (one question at a time) for anything the codebase didn't resolve
 - Proposes the file structure (every file mapped to a single responsibility)
-- Produces a `PLAN.md` decomposed into bite-sized TDD tasks — each with exact file paths, complete code, and expected test output
+- Settles the architecture decisions (invariant ownership, dependency direction, contract shapes, failure boundaries) before decomposing into tasks
+- Produces a `PLAN.md` decomposed into behavior-sized test-first tasks — each with an intent, a test-first tier, exact file paths, fixed contracts, the acceptance criteria it covers, and expected test output
 - **Hard-gate:** no execution until you explicitly approve the plan
 
 Optionally, Claude will offer to create the plan tasks as Jira subtasks.
@@ -133,7 +134,7 @@ After plan approval, choose your execution mode:
 ```
 
 `intent-ops:task-runner` dispatches a fresh subagent per task:
-1. **Implementer subagent** — executes the task following `tdd-guide` (failing test → verify RED → minimal code → verify GREEN → refactor)
+1. **Implementer subagent** — executes the task following `tdd-guide` (test → verify RED → implement → verify GREEN → refactor), at the step size set by the task's test-first tier
 2. **Spec compliance review** — verifies the implementation matches the spec before advancing
 3. **Code quality review** — checks ICP limits, coupling, and code quality
 4. Repeats until both reviews pass, then advances to the next task
@@ -151,7 +152,7 @@ After all tasks pass, a final review runs across the full implementation.
 /intent-ops:plan-executor
 ```
 
-`intent-ops:plan-executor` runs the same TDD cycle in the current session. Use this when subagents are unavailable or you prefer full visibility.
+`intent-ops:plan-executor` runs the same red-green cycle in the current session. Use this when subagents are unavailable or you prefer full visibility.
 
 ### Step 4: Generate Coverage
 
@@ -247,7 +248,7 @@ Feature intent (plain description — or an optional Jira ticket)
             └── (existing plan detected → revise/rewrite/view)
             └── task-runner (or plan-executor)
                     ├── worktree-setup      (isolation)
-                    ├── tdd-guide           (red → green → refactor, per task)
+                    ├── tdd-guide           (observed red → green → refactor, tiered)
                     ├── coding-guidelines   (DoD checklist)
                     ├── cognitive-driven-development  (ICP ≤ 7)
                     ├── coupling-analysis   (dependency balance)

@@ -37,7 +37,7 @@ Step-by-step guides for using the plugin stack from first setup through shipping
 
 | Plugin | Category | Skills | Description |
 |--------|----------|--------|-------------|
-| [`intent-ops`](plugins/intent-ops/) | product-engineering | `spec-writer` `retro-spec` `plan-writer` `plan-executor` `task-runner` `tdd-guide` `code-reviewer` `worktree-setup` `branch-shipper` `review-receiver` | Full Spec → Plan → Execute → Ship pipeline. Produces SPEC.md from a plain description or a Jira ticket (or from existing code via `retro-spec`), PLAN.md from specs, and drives TDD execution with per-task subagent isolation and two-stage review gates. Atlassian MCP is optional (enables Jira/Confluence sync). |
+| [`intent-ops`](plugins/intent-ops/) | product-engineering | `spec-writer` `retro-spec` `plan-writer` `plan-executor` `task-runner` `tdd-guide` `code-reviewer` `worktree-setup` `branch-shipper` `review-receiver` | Full Spec → Plan → Execute → Ship pipeline. Produces SPEC.md from a plain description or a Jira ticket (or from existing code via `retro-spec`), PLAN.md from specs, and drives verification-driven execution with per-task subagent isolation and two-stage review gates. Atlassian MCP is optional (enables Jira/Confluence sync). |
 | [`project-setup`](plugins/project-setup/) | workspace | `codebase-mapping` `docs-writer` | Language-agnostic workspace tools: codebase documentation, project initialization, and conventional commit generation. |
 | [`java-code-standards`](plugins/java-code-standards/) | code-quality | `coding-guidelines` `cognitive-driven-development` `coupling-analysis` `coverage-driven-test-generation` | Coordinated set of four skills + one rule enforcing a consistent Java coding standard: ICP ≤ 7, balanced coupling, MC/DC JaCoCo coverage. |
 
@@ -150,7 +150,7 @@ Full Spec → Plan → Execute → Ship pipeline. Works from a plain feature des
 **`plan-writer`** — produces a `PLAN.md` from an approved `SPEC.md`:
 - Phase 0.1 — checks for an existing plan before starting
 - Phase 0.7 — codebase pre-read before the architecture interview: answers questions from code, only asks the user what the code cannot answer
-- Architecture interview → file structure proposal → bite-sized TDD tasks with exact code
+- Architecture interview → file structure proposal → architecture gate (invariant ownership, dependency direction, contracts, failure boundaries) → behavior-sized test-first tasks with fixed contracts
 - HARD-GATE: no execution until explicit approval; optional Jira subtask creation
 
 **`task-runner`** — executes the plan with fresh subagents per task:

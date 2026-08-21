@@ -123,7 +123,7 @@ After spec approval, run `plan-writer` with the saved spec path:
 - **Phase 0.7:** reads the codebase before asking any questions — only asks the user what the code cannot answer
 - Runs an architecture interview for anything the codebase didn't resolve
 - Proposes the file structure (one responsibility per file)
-- Produces a `PLAN.md` decomposed into bite-sized TDD tasks with exact file paths and complete code
+- Produces a `PLAN.md` decomposed into behavior-sized test-first tasks with exact file paths, fixed contracts, and per-task acceptance criteria
 - **Hard-gate:** no execution until you explicitly approve the plan
 
 ### Step 3: Execute
@@ -136,7 +136,7 @@ After spec approval, run `plan-writer` with the saved spec path:
 
 For each task, `intent-ops:task-runner`:
 1. Dispatches a fresh **implementer subagent** following `tdd-guide`:
-   - Write failing test → verify RED → write minimal code → verify GREEN → refactor
+   - Write the test → verify RED (right reason) → implement the behavior → verify GREEN → refactor, at the step size set by the task's test-first tier
    - Test commands auto-detected: `pytest`, `npm test`, `go test ./...`, `cargo test`
 2. Runs **spec compliance review** — verifies the task output matches the spec
 3. Runs **code quality review** — checks design, edge cases, and correctness
@@ -149,7 +149,7 @@ For each task, `intent-ops:task-runner`:
 /intent-ops:plan-executor
 ```
 
-`intent-ops:plan-executor` runs the same TDD cycle in the current session. Use when subagents are unavailable.
+`intent-ops:plan-executor` runs the same red-green cycle in the current session. Use when subagents are unavailable.
 
 ### Step 4: Commit
 
@@ -260,7 +260,7 @@ Feature intent (plain description — or an optional Jira ticket)
     └── plan-writer ──────────────────────────────► PLAN.md
             └── task-runner (or plan-executor)
                     ├── worktree-setup      (isolation)
-                    ├── tdd-guide           (red → green → refactor, per task)
+                    ├── tdd-guide           (observed red → green → refactor, tiered)
                     ├── code-reviewer       (spec compliance + quality gates)
                     └── branch-shipper ───► PR / merge
                             └── review-receiver  (feedback loop)

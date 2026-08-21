@@ -99,7 +99,7 @@ Before declaring work complete, verify:
 ### Example 1: Adding a new feature
 
 User says: "Add retry logic to the payment client."
-Actions: State assumptions (idempotency, retry count), write a failing test for the retry scenario, then add minimal implementation. Adjacent error handling left untouched.
+Actions: State assumptions (idempotency, retry count), write a failing test for the retry scenario, watch it fail, then implement it — scoped to that scenario and nothing more. Adjacent error handling left untouched.
 Result: Only retry logic added. No surrounding code modified.
 
 ### Example 2: Bug fix
