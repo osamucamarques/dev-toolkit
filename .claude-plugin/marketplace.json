@@ -1,0 +1,23 @@
+{
+  "name": "dev-toolkit",
+  "owner": {
+    "name": "Samuel Marques"
+  },
+  "plugins": [
+    {
+      "name": "intent-ops",
+      "source": "./plugins/intent-ops",
+      "description": "Full delivery pipeline from feature intent to merged branch (a Jira ticket is optional and enriches the flow when present): spec-writer (DDD spec from a description or Jira ticket), plan-writer (TDD implementation plan), task-runner (subagent-per-task execution with two-stage review), plan-executor (inline execution), worktree-setup, tdd-guide, code-reviewer, review-receiver, branch-shipper. Every stage gated on explicit approval."
+    },
+    {
+      "name": "project-setup",
+      "source": "./plugins/project-setup",
+      "description": "Language-agnostic workspace tools: codebase-mapping produces a 7-file docs/codebase/ knowledge base, docs-writer writes and edits documentation files, /project-init initializes or syncs CLAUDE.md, /commit generates conventional commit messages."
+    },
+    {
+      "name": "java-code-standards",
+      "source": "./plugins/java-code-standards",
+      "description": "Four skills and one rule enforcing a consistent Java coding standard. ICP is a diagnostic tool, not an architectural driver — semantic cohesion over metric decomposition. Tiers: ≤ 7 ideal, 8–9 tolerated when the Abstraction Gate rejects decomposition, ≥ 10 hard block. Balanced coupling (3D model), MC/DC JaCoCo coverage."
+    }
+  ]
+}

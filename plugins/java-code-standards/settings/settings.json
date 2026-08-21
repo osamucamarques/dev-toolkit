@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew test:*)",
+      "Bash(./gradlew jacocoTestReport:*)",
+      "Bash(./gradlew build -x test:*)",
+      "Bash(./gradlew googleJavaFormat:*)",
+      "Bash(./gradlew dependencies:*)",
+      "Bash(grep -rn:*)",
+      "Bash(find src:*)"
+    ]
+  }
+}

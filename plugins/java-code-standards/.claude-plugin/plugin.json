@@ -1,0 +1,8 @@
+{
+  "name": "java-code-standards",
+  "version": "2.1.0",
+  "description": "A coordinated set of four skills and one rule that enforce a consistent Java coding standard. The three code skills (coding-guidelines, cognitive-driven-development, coupling-analysis) must always be used together when writing or changing Java code. coverage-driven-test-generation runs after code changes to maintain JaCoCo coverage. The code-standard.md rule provides the Definition of Done and is auto-loaded for all .java files.",
+  "author": {
+    "name": "Samuel Marques"
+  }
+}

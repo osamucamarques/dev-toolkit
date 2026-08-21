@@ -1,0 +1,8 @@
+{
+  "name": "project-setup",
+  "version": "2.1.0",
+  "description": "Language-agnostic workspace tools. Provides codebase documentation (codebase-mapping), project initialization (/project-init), and conventional commit generation (/commit). Install alongside java-code-standards for Java projects.",
+  "author": {
+    "name": "Samuel Marques"
+  }
+}

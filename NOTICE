@@ -1,0 +1,91 @@
+dev-toolkit — third-party notices
+=================================
+
+This marketplace contains work derived from the projects below. Each derived file
+also carries an inline attribution blockquote and `derived_from` / `source_url`
+frontmatter naming its upstream and the changes made.
+
+
+1. obra/superpowers — MIT
+-------------------------
+
+Parts of the `intent-ops` plugin are derived from the superpowers skills library
+(https://github.com/obra/superpowers). The following notice is reproduced as required
+by the MIT License:
+
+    MIT License
+
+    Copyright (c) 2025 Jesse Vincent
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+Derived files (8 files across 6 skills):
+
+    intent-ops/skills/branch-shipper/SKILL.md
+        <- skills/finishing-a-development-branch/SKILL.md
+    intent-ops/skills/worktree-setup/SKILL.md
+        <- skills/using-git-worktrees/SKILL.md
+    intent-ops/skills/plan-writer/SKILL.md
+        <- skills/writing-plans/SKILL.md
+    intent-ops/skills/plan-writer/references/plan-template.md
+        <- skills/writing-plans/SKILL.md  (task scaffolding and headings)
+    intent-ops/skills/task-runner/references/code-quality-reviewer-prompt.md
+        <- skills/subagent-driven-development/task-reviewer-prompt.md
+    intent-ops/skills/task-runner/references/implementer-prompt.md
+        <- skills/subagent-driven-development/implementer-prompt.md
+    intent-ops/skills/code-reviewer/references/code-reviewer-prompt.md
+        <- skills/requesting-code-review/code-reviewer.md
+    intent-ops/skills/tdd-guide/references/testing-anti-patterns.md
+        <- skills/test-driven-development/testing-anti-patterns.md  (upstream v6.1.1)
+
+The three reviewer-prompt templates that previously derived from upstream — plan-writer's
+plan-reviewer-prompt.md and the spec-reviewer-prompt.md files in spec-writer and retro-spec —
+were rewritten from scratch and are no longer derived. They retain only the output contract
+their calling skills parse ("Status: Approved | Issues Found").
+
+
+2. tech-leads-club/agent-skills — CC BY 4.0
+-------------------------------------------
+
+Three skills are adaptations of skills from the Tech Leads Club agent-skills catalog
+(https://github.com/tech-leads-club/agent-skills), whose SKILL.md files are licensed
+under the Creative Commons Attribution 4.0 International License
+(https://creativecommons.org/licenses/by/4.0/). Those three adaptations remain under
+CC BY 4.0; they are not covered by the MIT License in LICENSE.
+
+    java-code-standards/skills/coding-guidelines/SKILL.md
+        <- (development)/coding-guidelines  by ale  (upstream credits "Karpathy Guidelines")
+    java-code-standards/skills/coupling-analysis/SKILL.md
+        <- (architecture)/coupling-analysis
+    project-setup/skills/docs-writer/SKILL.md
+        <- (development)/docs-writer
+
+
+3. Published methodology
+------------------------
+
+The `java-code-standards` plugin applies methodology published by others, cited in the
+skills that use it:
+
+    Cognitive-Driven Development (ICP) — cognitive-driven-development
+    "Balancing Coupling in Software Design", Vlad Khononov — coupling-analysis
+    Design Patterns (Gamma, Helm, Johnson, Vlissides) — gof-design-patterns.md
+
+
+Everything else in this repository is Copyright (c) 2026 Samuel Marques, MIT (see LICENSE).
