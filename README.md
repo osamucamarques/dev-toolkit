@@ -1,5 +1,7 @@
 # dev-toolkit
 
+[![Claude Code Marketplace](https://img.shields.io/badge/Claude%20Code-Marketplace-6C3EF5?logo=anthropic&logoColor=white)](https://github.com/osamucamarques/dev-toolkit)
+
 A plugin marketplace for Claude Code. Each plugin is a self-contained directory under `plugins/` with a `plugin.json` manifest, one or more skills, and optional rules and settings.
 
 ---
