@@ -4,6 +4,8 @@
 
 A plugin marketplace for Claude Code. Each plugin is a self-contained directory under `plugins/` with a `plugin.json` manifest, one or more skills, and optional rules and settings.
 
+> **Third-party skills.** Some skills here are derived from other open-source projects — [obra/superpowers](https://github.com/obra/superpowers) (MIT) and the [Tech Leads Club agent-skills](https://github.com/tech-leads-club/agent-skills) catalog (CC BY 4.0). Their licenses are respected: each derived file carries an inline attribution and `derived_from` / `source_url` frontmatter, and the full notices are in [NOTICE](NOTICE). See [License](#license) for details.
+
 ---
 
 ## Developer Workflows
