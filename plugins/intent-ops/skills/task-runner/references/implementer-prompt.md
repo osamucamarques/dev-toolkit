@@ -152,13 +152,32 @@ Task tool (general-purpose):
 
     Fix any issues found during self-review before reporting.
 
+    ## Evidence Before Assertions
+
+    Every claim in your report must be something you observed, not something you expect.
+
+    - **Never report a test as passing without having run it in this session.** "Should pass",
+      "will pass", and "passes based on the implementation" are all failures to report.
+    - **Never report a red you did not watch.** If you wrote the test and the implementation in
+      the same edit, the red never happened — go back and do it properly.
+    - **Do not describe code you did not open.** If you say an existing class behaves a certain
+      way, cite `path/File.java:45`. If you did not read it, say you did not read it.
+    - **A command you did not run has no result.** Run it, or report it as not run.
+    - **Every assumption you made survives into the report**, with the reason. An assumption that
+      turned out to be load-bearing and was never reported is the failure mode this whole review
+      pipeline exists to catch.
+
     ## Report Format
 
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
     - What you implemented (or what you attempted, if blocked)
-    - Test results (count, all passing?)
+    - Test results — the exact command you ran and its actual summary line (e.g.
+      `./gradlew test` → `BUILD SUCCESSFUL — 47 tests, 0 failures`). Paste what the tool printed;
+      do not paraphrase or reconstruct it from memory.
     - Files changed
     - Self-review findings (if any)
+    - **Assumptions made** — anything you took as true that the task did not state, and what it
+      would break if wrong. Write "none" only if that is literally true.
     - Any concerns or open questions
 
     Use DONE_WITH_CONCERNS if you completed the work but have doubts about correctness.

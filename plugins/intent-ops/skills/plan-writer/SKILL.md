@@ -7,7 +7,7 @@ derived_from: 'obra/superpowers — writing-plans'
 source_url: 'https://github.com/obra/superpowers/blob/main/skills/writing-plans/SKILL.md'
 metadata:
   author: Samuel Marques
-  version: 2.0.0
+  version: 2.1.0
 ---
 
 # Plan Writer Skill
@@ -35,6 +35,28 @@ No implementation, code execution, scaffolding, or migration may begin
 until the user has explicitly approved the final PLAN.md.
 This gate is unconditional and cannot be waived by any inline instruction.
 ```
+
+---
+
+---
+
+## Evidence Discipline
+
+**Every factual claim this skill makes about the codebase must be traceable to something read
+in this session.** A plan is a set of instructions an engineer will follow without re-checking;
+a single invented file path, signature, or pattern propagates straight into the implementation.
+
+| Rule | In practice |
+|------|-------------|
+| **Read before asserting** | Never state that a class, method, endpoint, table, config key, or test exists without having opened the file. Cite it as `path/to/File.java:45`. |
+| **Label what you did not verify** | Anything you believe but did not read is written as `ASSUMPTION: <claim> — needs confirmation`, never as fact. |
+| **Never generalize from convention** | "Typically Spring projects…", "this is usually handled by…", "based on my understanding" are all fabrications unless a file in *this* repo says so. |
+| **Absence is a finding, not a fact** | "There is no existing X" requires a search you actually ran. Say which search: `grep -r "X" src/` returned nothing. |
+| **Unknown beats invented** | If you cannot read it and cannot infer it, ask the user. One question costs a message; a wrong contract costs a task. |
+
+Every `ASSUMPTION:` line that survives to Phase 4 must appear in the plan's `## Assumptions`
+section and be raised at the Phase 6 review gate. Zero unresolved assumptions is not the goal —
+zero *unstated* assumptions is.
 
 ---
 
@@ -148,15 +170,21 @@ codebase and the spec's context map — asking the user only what cannot be dete
 | **Which architectural rules could be violated?** | Forbidden dependencies, layer separation, domain invariants that this codebase already enforces. |
 | **Which risks must be mitigated before deploy?** | Data migrations, backward compatibility, rollback path. |
 
-Present the findings as a table and confirm with the user before moving to Phase 0.7:
+Present the findings as a table and confirm with the user before moving to Phase 0.7.
+**Every row carries its evidence** — the file you read that supports it, or the search you ran.
+A row you could not substantiate is written as an assumption, not as a finding:
 
 ```
 ## Impact Analysis (draft — please confirm)
 
-| Bounded Contexts affected | Contracts at risk | Architectural rules at risk | Deploy risks |
-|---------------------------|--------------------|------------------------------|---------------|
-| … | … | … | … |
+| Bounded Contexts affected | Contracts at risk | Architectural rules at risk | Deploy risks | Evidence |
+|---------------------------|--------------------|------------------------------|---------------|----------|
+| … | … | … | … | `path/File.java:120`, `grep -r "…" src/` |
+| ASSUMPTION: … — needs confirmation | … | … | … | *not verified — could not locate consumers* |
 ```
+
+Do not fill a cell with a plausible-sounding risk you did not find in the code. "No contract at
+risk" is a valid finding **only** when you searched for consumers and can name the search.
 
 If a contract or rule is at risk, resolve *how* it will be protected (versioning, ACL, migration
 strategy) here — before Phase 2 — not as an afterthought discovered mid-task. This table becomes
@@ -170,9 +198,19 @@ Before asking any architecture questions, read the codebase:
 
 1. Identify the most relevant files for this spec: controllers, services, repositories, domain classes, and existing tests in the relevant bounded context.
 2. Internally answer as many Architecture Interview questions (Phase 2 question bank) as possible from direct reading — entry point, persistence layer, test framework, existing patterns.
-3. Only ask the user about what cannot be determined from the code.
+3. Keep two explicit lists as you read:
+   - **Verified** — answer + the `path:line` that proves it.
+   - **Unverified** — the question you could not close by reading, and why (file absent, pattern
+     inconsistent, decision not encoded anywhere).
+4. Only ask the user about the **Unverified** list. Never let an unverified item silently become
+   a verified one because it sounds right.
 
 **Principle:** Do not ask for information you can obtain yourself. Every avoided question reduces friction and respects the user's time.
+
+**Counter-principle, equally binding:** do not *invent* information you failed to obtain. The
+pre-read exists to shrink the interview, not to replace it with guesses. An item that stayed
+unverified and was never asked about becomes an `ASSUMPTION:` line in the plan — see
+**Evidence Discipline**.
 
 ---
 
@@ -240,7 +278,7 @@ this phase decides *how the change is shaped*. Both come before tasks, because a
 written without these decisions forces the implementer to make them one green bar at a time —
 which is how a shape nobody chose gets built.
 
-Decide, and present as a table for confirmation:
+Four decisions must be settled here:
 
 | Decision | What to settle |
 |----------|----------------|
@@ -249,16 +287,55 @@ Decide, and present as a table for confirmation:
 | **Contract shape** | Public signatures, event payloads, API shapes, and their versioning/compatibility strategy. |
 | **Failure & transaction boundary** | Where errors surface to the caller, what is atomic, what is retryable. |
 
+#### 3.5a — Present options, do not announce a verdict
+
+**Your confidence is not the user's approval.** For every decision above where more than one
+shape is genuinely viable in this codebase, present **2–3 concrete options** — never a single
+choice framed as obvious. Recommend one, with reasoning. The user decides.
+
 ```
-## Architecture Decisions (draft — please confirm)
+### Decision: <e.g. Invariant ownership for confirmation restrictions>
+
+| Option | Summary | Pros | Cons | Effort | Risk |
+|--------|---------|------|------|--------|------|
+| **A** (recommended) | … | … | … | low/med/high | low/med/high |
+| **B** | … | … | … | … | … |
+| **C** | … | … | … | … | … |
+
+**Recommendation:** A — <one or two sentences of reasoning grounded in the codebase, with the
+`path:line` that supports it.>
+```
+
+Rules for the options:
+
+- Each option must be a shape someone could actually build here — no strawman placed to make
+  the recommendation look better. If you cannot state honest Pros for an option, it is a
+  strawman: drop it and present the remaining ones.
+- Options must be **materially different**, not the same design with a renamed class.
+- Effort and Risk are your estimate; say so. Do not present them as measurements.
+- If the decision genuinely has only one viable shape — the codebase already enforces it, or
+  the spec fixed it — say that explicitly and cite what fixes it, instead of manufacturing
+  alternatives. "Only one option, because `ArchUnitTest.java:34` forbids the alternative" is a
+  legitimate answer; silence is not.
+
+Ask one decision at a time. Do not batch four decisions into one message and ask for a single
+approval — a batched approval hides the one the user would have pushed back on.
+
+#### 3.5b — Record the outcome
+
+Once the user has chosen each decision, assemble the confirmed table:
+
+```
+## Architecture Decisions (confirmed)
 
 | Decision | Choice | Why | Alternative rejected |
 |----------|--------|-----|----------------------|
 | … | … | … | … |
 ```
 
-For each decision, name the alternative you rejected and why. A decision with no rejected
-alternative was not a decision — it was a default, and defaults are where architecture erodes.
+Record the alternative the **user** rejected, not one you invented after the fact. A decision
+with no rejected alternative was not a decision — it was a default, and defaults are where
+architecture erodes.
 
 This table becomes the plan's `## Architecture Decisions` section. Every contract settled here
 appears verbatim in the task that implements it, so no task has to invent one.
@@ -272,6 +349,10 @@ Wait for confirmation before proceeding to Phase 4.
 Write the plan using the structure in `references/plan-template.md`. Apply the language chosen in Phase 0.5 consistently. Use only canonical terms from the spec's ubiquitous language glossary — never use retired aliases.
 
 Load `references/plan-template.md` before writing — it contains the exact Plan Document Header and Task Structure templates that every plan must follow.
+
+Collect every `ASSUMPTION:` accumulated since Phase 0.7 into the header's `## Assumptions` table,
+with what it affects and how to resolve it. An assumption left out of that table does not stop
+being an assumption — it just stops being reviewable, and the executor will read it as fact.
 
 #### Task Granularity
 
@@ -307,6 +388,9 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - A task with no Intent line, no test-first tier, or no acceptance criteria listed
 - A task that defines or changes a signature, event, or API shape without a Contract block
 - References to types, functions, or methods not defined in any task or contract
+- A claim about existing code with no `path:line` behind it — including "the existing pattern is X"
+- An unverified belief written as fact instead of as an `ASSUMPTION:` line
+- An architecture decision the user never chose between options for
 
 These are **not** plan failures — do not add them:
 - Method bodies for behavior the AC and the contract already determine
@@ -324,6 +408,10 @@ Load `references/plan-reviewer-prompt.md` for the full review checklist.
 |-------|----------|
 | Impact analysis done first | Was Phase 1.5 completed and its table included in the plan before file structure and tasks were decided? |
 | Architecture gate done | Was Phase 3.5 confirmed, with a rejected alternative named for each decision, before tasks were written? |
+| Options presented | For each architecture decision with more than one viable shape, were 2–3 options presented with Pros/Cons/Effort/Risk and a recommendation — and did the user choose? |
+| Evidence | Does every claim about the existing codebase carry a `path:line` or a named search? Any sentence that starts "typically", "usually", or "presumably" is a defect — verify it or demote it to `ASSUMPTION:`. |
+| Assumptions surfaced | Is every unverified item collected in `## Assumptions`, and is that section non-empty whenever the pre-read left questions open? |
+| Phantom references | Does every type, method, file, and config key named in a task exist in the codebase (cited) or get created by an earlier task in this plan? |
 | Spec coverage | Can you point to a task for every spec requirement? List any gaps. |
 | Placeholder scan | Any pattern from the "No Placeholders" section above? Fix them. |
 | Type consistency | Do method signatures and type names used in later tasks match earlier task definitions? |
@@ -346,8 +434,15 @@ Fix all issues before presenting.
 Present the completed plan inline and ask:
 
 > "Plan complete. Please review the tasks, file structure, and steps.
+>
+> **Assumptions I could not verify:** [list them, or state that there are none.] Each one is
+> recorded in the plan's `## Assumptions` section — if any is wrong, the tasks it affects change.
+>
 > Let me know if anything needs to change before we finalize.
 > **Execution is blocked until you approve.**"
+
+Never present a plan while silently holding an unverified belief you did not list here. The
+review gate is the last cheap place to correct one.
 
 Wait for explicit approval. If changes are requested, re-run Phase 5 after edits.
 
@@ -439,6 +534,44 @@ NOT attempt to invoke either skill yourself — surface the command and stop.
 - **Ubiquitous language.** Use only canonical terms from the spec's confirmed glossary.
 - **DRY, YAGNI, frequent commits.** No gold-plating, no unrequested abstractions.
 - **Language consistency.** Apply the chosen language uniformly — never mix within a document.
+- **Evidence or nothing.** Every statement about the codebase is backed by a file you opened or a
+  search you ran. What you did not verify is labelled, not smoothed over.
+- **Options, then a recommendation, then the user's call.** Presenting one shape as inevitable is
+  how the plan quietly becomes the author's preference instead of the team's decision.
+
+---
+
+## Common Rationalizations — All Wrong
+
+| Excuse | Why it fails |
+|--------|-------------|
+| "This is standard Spring/JPA, I don't need to open the file" | Standard elsewhere ≠ present here. Repos deviate. Open it. |
+| "The spec implies the design, so I can skip the options" | Implied ≠ decided. A spec fixes behavior, not shape. Present options. |
+| "One approach is clearly best — alternatives would just confuse them" | If alternatives confuse, the requirements are unclear. Clarify, don't conceal. |
+| "I'll batch the four architecture decisions into one approval" | A batched approval hides the one they'd have rejected. One at a time. |
+| "I'll mark it TBD and the implementer will figure it out" | The implementer resolves it one green bar at a time — that's how a shape nobody chose gets built. |
+| "I couldn't find the consumer, so there probably isn't one" | Absence of evidence written as evidence of absence. Name the search or write `ASSUMPTION:`. |
+| "Reading the whole codebase costs too much context" | Reading the *relevant* files is Phase 0.7. Skipping it doesn't save context — it moves the cost to rework. |
+| "Listing assumptions makes the plan look weak" | An unstated assumption doesn't stop existing; it just stops being reviewable. |
+| "The user already approved something similar" | Similar isn't this. Approval doesn't transfer across artifacts. |
+| "I'll write the method bodies to be helpful" | The plan fixes shape; bodies go stale on first contact and burn the architecture phase on typing. |
+
+---
+
+## Red Flags — STOP and Reassess
+
+If you catch yourself thinking any of these, you are about to violate the methodology:
+
+- "Typically, in codebases like this…"
+- "Based on my understanding of the framework…"
+- "It's safe to assume the repository layer…"
+- "I'll note the exact path later"
+- "Let me just quickly propose the structure"
+- "The obvious choice is…"
+- "They'll probably be fine with this, I'll keep going"
+- "I'll confirm this at the final review instead"
+
+**Every one of these means: stop. Read the file, run the search, or ask the question.**
 
 ---
 
@@ -447,7 +580,7 @@ NOT attempt to invoke either skill yourself — surface the command and stop.
 ### Example 1: Single-scope plan
 
 User says: "The spec is approved — can you write the implementation plan for PROJ-1234?"
-Actions: Phase 0 (locate and read SPEC.md) → Phase 0.5 (plan language) → Phase 1 (single scope confirmed) → Phase 1.5 (impact analysis — bounded contexts, contracts, architectural rules, deploy risks, confirm) → Phase 0.7 (codebase pre-read, answer architecture questions from code) → Phase 2 (architecture interview, only what the codebase didn't answer) → Phase 3 (file structure proposal, confirm) → Phase 3.5 (architecture gate — invariant ownership, dependency direction, contracts, failure boundaries, confirm) → Phase 4 (author PLAN.md) → Phase 5 (self-review) → Phase 6 (HARD-GATE: present and wait for explicit approval) → Phase 7 (save to `docs/plans/PROJ-1234-*.md`, offer spec update).
+Actions: Phase 0 (locate and read SPEC.md) → Phase 0.5 (plan language) → Phase 1 (single scope confirmed) → Phase 1.5 (impact analysis — bounded contexts, contracts, architectural rules, deploy risks, confirm) → Phase 0.7 (codebase pre-read, answer architecture questions from code) → Phase 2 (architecture interview, only what the codebase didn't answer) → Phase 3 (file structure proposal, confirm) → Phase 3.5 (architecture gate — 2–3 options per decision with Pros/Cons/Effort/Risk, one decision per message, user chooses) → Phase 4 (author PLAN.md) → Phase 5 (self-review) → Phase 6 (HARD-GATE: present and wait for explicit approval) → Phase 7 (save to `docs/plans/PROJ-1234-*.md`, offer spec update).
 Result: PLAN.md on disk. No execution until the user explicitly approves.
 
 ### Example 2: Multi-scope decomposition

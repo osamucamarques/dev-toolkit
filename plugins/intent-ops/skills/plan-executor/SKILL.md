@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Samuel Marques
-  version: 2.0.0
+  version: 2.1.0
 ---
 
 # Plan Executor Skill
@@ -62,8 +62,12 @@ or the user wants subagent-driven execution (use `intent-ops:task-runner` instea
    - References to types or methods not defined elsewhere in the plan?
    - Scope that seems misaligned with the linked spec?
    - Has the codebase changed since the plan's Impact Analysis section was written? If a contract, bounded context, or architectural rule listed there is no longer accurate, stop and re-confirm before executing — the impact analysis is a constraint to respect, not something the executor re-derives on its own.
-4. If concerns exist, raise them and wait for resolution before proceeding.
-5. If no concerns, create a task list from all plan tasks and confirm the count with the user.
+5. Read the plan's `## Assumptions` table, if present. Each row is an open question the plan
+   could not close. Resolve every assumption whose **Affects** column names a task you are about
+   to execute — by reading the code yourself (cite the `path:line`) or by asking the user — before
+   that task starts. An assumption carried into a task silently becomes a decision nobody made.
+6. If concerns or unresolved assumptions exist, raise them and wait for resolution before proceeding.
+7. If no concerns, create a task list from all plan tasks and confirm the count with the user.
 
 ---
 
@@ -160,6 +164,24 @@ user runs it.
 - **Stop when blocked.** Do not guess, adapt, or force through failures.
 - **Isolation first.** Always verify worktree before writing any code.
 - **No main/master without consent.** The HARD-GATE is unconditional.
+- **Evidence before assertions.** Never report a test as passing, a suite as green, or a step as
+  done without having run the command in this session and read its output. "Should pass" is not
+  a result. A command you did not run has no result.
+- **Assumptions are surfaced, not absorbed.** Anything you took as true that the plan did not
+  state goes into your checkpoint report, with what it would break if wrong.
+
+---
+
+## Common Rationalizations — All Wrong
+
+| Excuse | Why it fails |
+|--------|-------------|
+| "The change is trivial, the suite will obviously still pass" | Trivial changes break suites. Run it. |
+| "I ran the suite two tasks ago, it's fine" | Two tasks of edits since. Run it again. |
+| "The plan says the class exists, so I'll code against it" | The plan can be stale. Open the file before depending on it. |
+| "The step is ambiguous — I'll pick the sensible reading and note it" | Ambiguity in a plan step is an escalation, not a judgment call. Stop and ask. |
+| "This assumption is minor, no need to report it" | Minor assumptions are the ones nobody reviews. Report it. |
+| "I'll say it's done and verify at the end" | The end is where a false 'done' becomes a mystery. Verify per step. |
 
 ---
 

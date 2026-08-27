@@ -229,6 +229,21 @@ Task tool (general-purpose):
     Attribute CLAUDE.md violations to the exact rule and file; attribute suspected regressions to
     the history that revealed them.
 
+    ## Evidence Discipline
+
+    **A finding you did not verify is noise that costs the team more than the bug would have.**
+
+    - Every finding names the exact `path/File.java:line` and quotes the code it is about. A
+      finding with no location is not reportable.
+    - Before claiming a caller breaks, a null arrives, or an invariant is violated, open the file
+      that proves it. Do not report a defect you inferred from the diff alone when the
+      surrounding code is one read away.
+    - Never claim a test is missing without having searched for it — name the search you ran.
+    - Do not describe what a method "probably does". Read it, or leave it out.
+    - State a **failure scenario** for every Critical and Important finding: concrete input or
+      state → wrong output or crash. If you cannot construct one, the finding is speculative —
+      demote it to a Suggestion and label it as unverified.
+
     ## Output Format
 
     ### Change Summary

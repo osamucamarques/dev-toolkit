@@ -1,7 +1,7 @@
 Initialize or sync the project's `CLAUDE.md` and `.claude/settings.json`, then immediately map the codebase.
 
 - **First run (no `CLAUDE.md`):** creates the full file from the template, merges installed plugins' settings into `.claude/settings.json`, then runs `codebase-mapping`.
-- **Subsequent runs (`CLAUDE.md` exists):** surgically updates only the `### Rules` and `### Skills` sections inside `## Knowledge Base — Document Map`, leaving all other content untouched — including `### Codebase Reference` (written by `codebase-mapping`) and any user content under `### Active Plans & Specs` — re-merges installed plugins' settings into `.claude/settings.json`, then runs `codebase-mapping`.
+- **Subsequent runs (`CLAUDE.md` exists):** surgically updates only the `### Rules` and `### Skills` sections inside `## Knowledge Base — Document Map` plus the top-level `## Evidence Discipline` section, leaving all other content untouched — including `### Codebase Reference` (written by `codebase-mapping`) and any user content under `### Active Plans & Specs` — re-merges installed plugins' settings into `.claude/settings.json`, then runs `codebase-mapping`.
 
 ---
 
@@ -56,6 +56,23 @@ Skills are invoked via the `Skill` tool — never read directly. Listed here for
 - After writing code, use `coverage-driven-test-generation` to create unit tests.
 - For every new feature, add a test case in `testing.md` with objective, steps, acceptance criteria, and update the coverage matrix and changelog.
 - Code is formatted with Google Java Format (AOSP style). Run `./gradlew go` before committing.
+
+---
+
+## Evidence Discipline
+
+Do not state anything about this codebase you have not verified. An invented fact costs far more than an admitted gap.
+
+- **Read before asserting.** Never claim a class, method, endpoint, table, column, config key, env var, or test exists without having opened the file. Cite it as `path/to/File.java:45`.
+- **Absence needs a search.** "There is no X here" is only valid after a search you actually ran — name it (`grep -r "X" src/` returned nothing). Never infer absence from not having looked.
+- **Never generalize from convention.** "Typically in Spring…", "this is usually handled by…", "based on my understanding…" are fabrications unless a file in *this* repo says so.
+- **Label unverified beliefs.** Anything you believe but did not verify is written as `ASSUMPTION: <claim> — needs confirmation`, never as fact, and never silently dropped.
+- **Evidence before assertions.** Never report a test as passing, a build as green, a bug as fixed, or a step as done without having run the command in this session and read its output. "Should pass" is not a result; a command you did not run has no result.
+- **Paste real output.** Report the actual command and its actual summary line. Do not paraphrase or reconstruct output from memory.
+- **Ask rather than invent.** If you cannot read it and cannot infer it, ask. One question costs a message; a wrong assumption costs a rewrite.
+- **Requirements come from the user.** Never author a requirement, acceptance criterion, or business rule the user did not state or confirm. If it seems obviously needed, ask — silence in a ticket is a gap, not permission.
+
+**Red flags — stop and verify instead:** "typically", "usually", "presumably", "should already", "it's safe to assume", "they probably want", "it goes without saying", "I'll confirm this later".
 
 ---
 
@@ -129,6 +146,30 @@ Skills are invoked via the `Skill` tool — never read directly. Listed here for
 
 - **If the heading does not exist:** append the block above at the end of `## Knowledge Base — Document Map` (before the next `##` section or end of file).
 
+#### Sync `## Evidence Discipline` section
+
+Locate the top-level heading `## Evidence Discipline`.
+
+- **If the heading exists:** replace everything between it and the next `## ` heading (exclusive) with the block below.
+- **If the heading does not exist:** insert the block below immediately before `## Security` (or at the end of the file if `## Security` is absent).
+
+```markdown
+## Evidence Discipline
+
+Do not state anything about this codebase you have not verified. An invented fact costs far more than an admitted gap.
+
+- **Read before asserting.** Never claim a class, method, endpoint, table, column, config key, env var, or test exists without having opened the file. Cite it as `path/to/File.java:45`.
+- **Absence needs a search.** "There is no X here" is only valid after a search you actually ran — name it (`grep -r "X" src/` returned nothing). Never infer absence from not having looked.
+- **Never generalize from convention.** "Typically in Spring…", "this is usually handled by…", "based on my understanding…" are fabrications unless a file in *this* repo says so.
+- **Label unverified beliefs.** Anything you believe but did not verify is written as `ASSUMPTION: <claim> — needs confirmation`, never as fact, and never silently dropped.
+- **Evidence before assertions.** Never report a test as passing, a build as green, a bug as fixed, or a step as done without having run the command in this session and read its output. "Should pass" is not a result; a command you did not run has no result.
+- **Paste real output.** Report the actual command and its actual summary line. Do not paraphrase or reconstruct output from memory.
+- **Ask rather than invent.** If you cannot read it and cannot infer it, ask. One question costs a message; a wrong assumption costs a rewrite.
+- **Requirements come from the user.** Never author a requirement, acceptance criterion, or business rule the user did not state or confirm. If it seems obviously needed, ask — silence in a ticket is a gap, not permission.
+
+**Red flags — stop and verify instead:** "typically", "usually", "presumably", "should already", "it's safe to assume", "they probably want", "it goes without saying", "I'll confirm this later".
+```
+
 #### If `## Knowledge Base — Document Map` does not exist at all
 
 Append the following to `CLAUDE.md` before the first `## ` section that is not `## Knowledge Base` (or at the end of file if no other `##` sections exist):
@@ -161,7 +202,7 @@ Skills are invoked via the `Skill` tool — never read directly. Listed here for
 
 ```
 
-Confirm: "`CLAUDE.md` synced — Rules and Skills sections updated."
+Confirm: "`CLAUDE.md` synced — Rules, Skills, and Evidence Discipline sections updated."
 
 ---
 

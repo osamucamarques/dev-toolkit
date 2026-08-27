@@ -26,9 +26,9 @@ Every PLAN.md must start with this header:
 
 ## Impact Analysis
 
-| Bounded Contexts affected | Contracts at risk | Architectural rules at risk | Deploy risks |
-|---------------------------|--------------------|------------------------------|---------------|
-| … | … | … | … |
+| Bounded Contexts affected | Contracts at risk | Architectural rules at risk | Deploy risks | Evidence |
+|---------------------------|--------------------|------------------------------|---------------|----------|
+| … | … | … | … | `path/File.java:120` |
 
 ## Architecture Decisions
 
@@ -38,6 +38,16 @@ Every PLAN.md must start with this header:
 | Dependency direction | … | … | … |
 | Contract shape / versioning | … | … | … |
 | Failure & transaction boundary | … | … | … |
+
+## Assumptions
+
+Everything this plan takes as true but did not verify by reading the codebase. Each line is a
+question the executing engineer must close before the task that depends on it — not a note to
+skim past. An empty table is only correct when the pre-read genuinely closed every question.
+
+| # | Assumption | Why it could not be verified | Affects | Resolve by |
+|---|-----------|------------------------------|---------|-----------|
+| A1 | … | … | Task 3 | Reading `…` / asking the API owner |
 
 ---
 ```

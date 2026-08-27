@@ -32,6 +32,10 @@ Task tool (general-purpose):
     would have to guess a type name, invent a file path, or decide for itself what
     "handle errors properly" means, the task is not ready.
 
+    **Verify; do not assume, in either direction.** When the plan cites `Foo.java:45`, open it.
+    Do not approve a citation because it looks plausible, and do not report one as wrong without
+    having opened the file yourself. A defect you inferred but did not confirm is a preference.
+
     ## Pass 1 — task mechanics
 
     Each task must carry these, with nothing implied:
@@ -86,15 +90,27 @@ Task tool (general-purpose):
     - The Impact Analysis table holds real findings, not dashes.
     - The Architecture Decisions table settles invariant ownership, dependency direction,
       contract shape, and failure/transaction boundary — each with the alternative it rejected.
-      A decision left to the implementer is a blocking gap, not a detail.
+      A decision left to the implementer is a blocking gap, not a detail. The rejected
+      alternative must be a real option that was weighed, not one invented afterwards to fill
+      the column.
+    - The Impact Analysis rows carry evidence — a `path:line` or a named search. A row asserting
+      "no contract at risk" with nothing behind it is a guess wearing a finding's clothes.
+    - The Assumptions table lists what the plan could not verify, with what each affects and how
+      to resolve it. Cross-check it against the task text: an unverified belief stated as fact
+      inside a task, rather than recorded here, is blocking — the implementer cannot tell the
+      difference and will build on it.
+    - Scan for hedging that stands in for verification: "typically", "usually", "presumably",
+      "should already", "it's safe to assume". Each one is either a fact that needed a citation
+      or an assumption that needed the table.
 
     ## Severity
 
     **Blocking** — would stop or misdirect an implementer: a missing verification step, a
     collapsed test/run-it pair, a missing Intent, tier, AC list, or Contract, an unsettled
     architecture decision, a placeholder (`TBD`, `TODO`, `implement later`, bare `...`), an
-    unresolvable reference, a signature conflict, an uncovered requirement or AC, or scope
-    the spec does not authorize.
+    unresolvable reference, a signature conflict, an uncovered requirement or AC, scope
+    the spec does not authorize, a claim about existing code with nothing behind it, or an
+    unverified belief written as fact instead of recorded in the Assumptions table.
 
     **Advisory** — everything else. Task ordering you would have chosen differently,
     naming you find less clear, a test you would have written more thoroughly. Say it once
@@ -122,8 +138,12 @@ Task tool (general-purpose):
     **Coverage gaps:**
     - <spec requirement or AC id>: no task implements or verifies this
 
+    **Unsourced claims:**
+    - [Task N or table row]: <claim stated as fact with no citation and no Assumptions entry>
+      > <quoted line>
+
     **Recommendations (advisory, do not block approval):**
     - <suggestion>
 ```
 
-**Reviewer returns:** Status, Blocking issues, Coverage gaps, Recommendations.
+**Reviewer returns:** Status, Blocking issues, Coverage gaps, Unsourced claims, Recommendations.

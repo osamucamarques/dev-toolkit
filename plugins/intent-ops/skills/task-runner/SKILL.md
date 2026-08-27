@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Samuel Marques
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # Task Runner Skill
@@ -54,8 +54,14 @@ execution (use `intent-ops:plan-executor`), or subagents are unavailable.
    - **Task ID mapping** — e.g. `Task 1 → PROJ-1235`, `Task 2 → PROJ-1236`
    If no Jira context was passed, commits will use conventional format without a subtask prefix.
 3. Note the architectural context: goal, tech stack, file structure, cross-task dependencies.
-4. Create a task list with all tasks in order (pending / in-progress / completed).
-5. Scan the task list for already-completed checkboxes (`[x]`). If any are found, surface them before proceeding:
+4. Read the plan's `## Assumptions` table, if present. Each row is an open question the plan
+   could not close. Before dispatching the implementer for a task listed in an assumption's
+   **Affects** column, resolve that assumption — by reading the code yourself or asking the
+   user — and pass the resolved fact in that task's Context block. Never dispatch a task
+   whose load-bearing assumption is still open; the implementer has no way to tell an
+   assumption from a fact once it is inside the prompt.
+5. Create a task list with all tasks in order (pending / in-progress / completed).
+6. Scan the task list for already-completed checkboxes (`[x]`). If any are found, surface them before proceeding:
 
    > "Tasks [N, M, …] are already marked complete in the plan. Options:
    > 1. **Skip** — start from the first incomplete task.
@@ -64,7 +70,7 @@ execution (use `intent-ops:plan-executor`), or subagents are unavailable.
 
    Wait for the user's answer. Default to **Skip** if the user does not respond within the conversation turn.
 
-6. Confirm the remaining task count with the user before dispatching the first implementer.
+7. Confirm the remaining task count with the user before dispatching the first implementer.
 
 ---
 
@@ -112,6 +118,16 @@ Dispatch a general-purpose subagent. Mark the task as **in progress**.
 | `BLOCKED` | Assess: context problem → provide context and re-dispatch. Task too large → break it down. Plan wrong → escalate to the user. |
 
 Never ignore BLOCKED or NEEDS_CONTEXT. Never retry without change.
+
+**Verify the report before trusting it.** A subagent's report is a claim, not a result:
+
+- If the report does not contain the actual test command and its actual output summary, treat
+  the task as unverified — re-dispatch asking for the real output, or run the suite yourself.
+- If the report says tests pass, confirm the suite is green before advancing. "The implementer
+  said it passed" is not verification.
+- If the report lists assumptions, resolve each one before the spec compliance review — an
+  assumption that reaches the reviewer as part of the implementation reads as a decision.
+- Never write "Task N complete" to the user based on a report you did not check.
 
 #### Step 2.3 — Spec Compliance Review
 

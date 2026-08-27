@@ -1,9 +1,11 @@
 dev-toolkit — third-party notices
 =================================
 
-This marketplace contains work derived from the projects below. Each derived file
-also carries an inline attribution blockquote and `derived_from` / `source_url`
-frontmatter naming its upstream and the changes made.
+This marketplace contains work derived from, or informed by, the projects below. Each
+derived file also carries an inline attribution blockquote and `derived_from` / `source_url`
+frontmatter naming its upstream and the changes made. Section 4 is a structural influence
+with no copied text, so the files it lists carry no such frontmatter — this notice is the
+whole of that attribution.
 
 
 1. obra/superpowers — MIT
@@ -86,6 +88,59 @@ skills that use it:
     Cognitive-Driven Development (ICP) — cognitive-driven-development
     "Balancing Coupling in Software Design", Vlad Khononov — coupling-analysis
     Design Patterns (Gamma, Helm, Johnson, Vlissides) — gof-design-patterns.md
+
+
+4. elb-pr/claudikins-kernel — MIT (structural influence, no copied text)
+------------------------------------------------------------------------
+
+The `brain-jam-plan` skill from the Claudikins kernel
+(https://github.com/elb-pr/claudikins-kernel/blob/main/skills/brain-jam-plan/SKILL.md)
+informed the planning-discipline sections added to `intent-ops` in v3.1.0. No text was
+copied: every sentence in the affected sections was written for this repository. What was
+adopted is structural and methodological, listed here for transparency rather than because
+the MIT License compels it for idea-level reuse:
+
+    - the "Rationalizations to Resist" / "Red Flags — STOP and Reassess" section pairing,
+      and its two-column excuse/reality table format
+    - Effort and Risk columns on the approach-comparison table, with an explicit
+      "recommend one, the user decides" rule
+    - "never fabricate research" as a non-negotiable, which seeded the Evidence Discipline
+      sections
+
+Affected files:
+
+    intent-ops/skills/plan-writer/SKILL.md          (Phase 3.5, Rationalizations, Red Flags)
+    intent-ops/skills/spec-writer/SKILL.md          (Phase 3, Rationalizations, Red Flags)
+    intent-ops/skills/plan-executor/SKILL.md        (Rationalizations)
+
+Note that two of these conventions predate this influence in `intent-ops`: the
+"Common Rationalizations" table has been in `tdd-guide` since v2.0.0 by way of
+obra/superpowers (section 1), which is where the pattern originates, and `spec-writer`
+already presented 2–3 approaches before v1.1.0.
+
+The MIT notice is reproduced below:
+
+    MIT License
+
+    Copyright (c) 2026 elb-pr
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 
 
 Everything else in this repository is Copyright (c) 2026 Samuel Marques, MIT (see LICENSE).

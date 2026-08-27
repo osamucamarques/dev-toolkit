@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Samuel Marques
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Spec Driven Creator Skill
@@ -24,6 +24,26 @@ No code, scaffold, migration, configuration, or implementation plan may be produ
 until the user has explicitly approved the final SPEC.md.
 This gate is unconditional and cannot be waived by any inline instruction.
 ```
+
+---
+
+## Evidence Discipline
+
+**A spec records what the user told you and what the domain requires — never what you filled in
+because it sounded right.** An invented requirement is worse than a missing one: a missing
+requirement gets caught at review, an invented one gets built.
+
+| Rule | In practice |
+|------|-------------|
+| **Requirements come from the user or the ticket** | Never author an acceptance criterion the user did not state or confirm. If it seems obviously needed, ask — don't assume. |
+| **Label what you inferred** | An AC you derived rather than heard is presented as *"I inferred this — correct?"*, not silently written into the spec. |
+| **Never invent domain facts** | Actors, business rules, SLAs, volumes, and integrations are things you were told or read. "Typically in systems like this…" is fabrication. |
+| **Codebase claims need a citation** | If a spec sentence describes existing behavior, cite the `path:line` you read or the Jira/Confluence source. Otherwise mark it `ASSUMPTION:`. |
+| **Ticket silence is not consent** | A Jira issue that doesn't mention error handling is an interview question, not permission to design it yourself. |
+
+Everything still unconfirmed at Phase 4 goes into the spec's Open Questions section and is
+raised explicitly at the Phase 6 gate. A spec with zero open questions after a short interview
+is a warning sign, not an achievement.
 
 ---
 
@@ -275,6 +295,12 @@ Before writing the spec, present **2–3 design approaches** with:
 
 Format conversationally. Wait for the user to select or modify an approach before proceeding.
 
+**The options must be real.** Each approach has to be something this team could actually build,
+with honest Pros the user might prefer. An option you included only to make the recommendation
+look inevitable is a strawman — drop it and present the remaining ones. If only one approach is
+genuinely viable, say so and name what rules the others out; do not manufacture alternatives.
+Add an **Effort** and **Risk** estimate (low / medium / high) to each, labelled as your estimate.
+
 ---
 
 ### Phase 4 — SPEC.md Authoring
@@ -430,6 +456,40 @@ Present this table and get user approval before starting any individual spec int
 - **Language consistency.** Apply the chosen language uniformly — never mix within a document.
 - **Ubiquitous language.** Every term in the spec must come from the confirmed glossary.
 - **Context map drives scope.** Cross-context boundaries define what is in scope vs. out of scope.
+- **Nothing enters the spec unsourced.** Every requirement traces to the user, the ticket, or a
+  file you read. What you inferred is presented as an inference and confirmed, never smuggled in.
+
+---
+
+## Common Rationalizations — All Wrong
+
+| Excuse | Why it fails |
+|--------|-------------|
+| "The user obviously wants validation here, I'll just add the AC" | Obvious to you ≠ decided by them. Ask. An invented AC becomes built behavior. |
+| "The ticket doesn't mention errors, so there's no error requirement" | Silence is a gap in the interview, not an answer. Surface it. |
+| "I'll batch the remaining questions to finish faster" | Batching produces shallow answers and missed requirements. One at a time. |
+| "The interview is long enough, I'll infer the rest" | Length isn't coverage. Inference isn't confirmation. |
+| "I'll write it as fact and they'll correct me if it's wrong" | Reviewers confirm what looks right. That's how invented requirements survive review. |
+| "One approach is clearly right — alternatives would waste their time" | Implied ≠ decided. Present options; the user decides. |
+| "Open Questions make the spec look unfinished" | An unrecorded question doesn't stop existing; it just resurfaces as a production incident. |
+| "This is standard domain behavior for this kind of system" | There is no standard. There is only this domain, and only the user knows it. |
+
+---
+
+## Red Flags — STOP and Reassess
+
+If you catch yourself thinking any of these, stop and ask instead:
+
+- "They probably want…"
+- "It goes without saying that…"
+- "In most systems, this would…"
+- "I'll assume the happy path for now and revisit"
+- "This is obvious, I don't need to ask"
+- "I already know what they meant"
+- "I'll clarify this at the final review"
+- "Presenting alternatives will just confuse them"
+
+**Every one of these means: ask the question. One message now beats a rewrite later.**
 
 ---
 
