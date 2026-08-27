@@ -37,8 +37,8 @@ Step-by-step guides for using the plugin stack from first setup through shipping
 
 | Plugin | Category | Skills | Description |
 |--------|----------|--------|-------------|
-| [`intent-ops`](plugins/intent-ops/) | product-engineering | `spec-writer` `retro-spec` `plan-writer` `plan-executor` `task-runner` `tdd-guide` `code-reviewer` `worktree-setup` `branch-shipper` `review-receiver` | Full Spec → Plan → Execute → Ship pipeline. Produces SPEC.md from a plain description or a Jira ticket (or from existing code via `retro-spec`), PLAN.md from specs, and drives verification-driven execution with per-task subagent isolation and two-stage review gates. Atlassian MCP is optional (enables Jira/Confluence sync). |
-| [`project-setup`](plugins/project-setup/) | workspace | `codebase-mapping` `docs-writer` | Language-agnostic workspace tools: codebase documentation, project initialization, and conventional commit generation. |
+| [`intent-ops`](plugins/intent-ops/) | product-engineering | `spec-writer` `retro-spec` `plan-writer` `plan-executor` `task-runner` `tdd-guide` `code-reviewer` `worktree-setup` `branch-shipper` `review-receiver` | Full Spec → Plan → Execute → Ship pipeline. Produces SPEC.md from a plain description or a Jira ticket (or from existing code via `retro-spec`), PLAN.md from specs, and drives verification-driven execution with per-task subagent isolation and two-stage review gates. Evidence discipline throughout: cited claims, labelled assumptions, and architecture decisions offered as options rather than announced. Atlassian MCP is optional (enables Jira/Confluence sync). |
+| [`project-setup`](plugins/project-setup/) | workspace | `codebase-mapping` `docs-writer` | Language-agnostic workspace tools: codebase documentation, project initialization, and conventional commit generation. The `CLAUDE.md` it writes includes an Evidence Discipline section, synced idempotently on later runs. |
 | [`java-code-standards`](plugins/java-code-standards/) | code-quality | `coding-guidelines` `cognitive-driven-development` `coupling-analysis` `coverage-driven-test-generation` | Coordinated set of four skills + one rule enforcing a consistent Java coding standard: ICP ≤ 7, balanced coupling, MC/DC JaCoCo coverage. |
 
 ---
@@ -131,11 +131,14 @@ Rules in `.claude/rules/` are auto-loaded for every conversation matching the ru
 
 Full Spec → Plan → Execute → Ship pipeline. Works from a plain feature description; a Jira story is optional and enriches the flow when present.
 
+**Evidence discipline runs through every stage.** No skill asserts something about your codebase it has not read. A claim carries a `path:line` or the search that came back empty; anything believed but unverified is written as a labelled `ASSUMPTION:` and travels in the plan's own `## Assumptions` table until someone closes it; and no step is reported done without the command output that proves it. Architecture decisions are put to you as 2–3 options with trade-offs, one decision per message — never announced as already settled.
+
 **`spec-writer`** — produces a formal `SPEC.md` from a plain description or a Jira ticket:
 - Phase 0.1 — checks for an existing spec (`revise` / `rewrite` / `view`); detects code-first scenarios and redirects to `retro-spec`
 - Phase 0–0.6 — context harvest (optional Jira harvest when a key is given, otherwise from the description + codebase), spec language selection, ubiquitous language glossary
 - Phase 1–2.5 — scope assessment, Socratic DDD interview (one question at a time, ≥ 95% confidence), bounded context map
-- Phase 3 — 2–3 design approaches, presented only after context, outcomes, constraints, and out-of-scope are fully understood
+- Phase 3 — 2–3 design approaches with effort and risk estimates, presented only after context, outcomes, constraints, and out-of-scope are fully understood; an option that exists only to make another look good is a strawman and gets dropped rather than listed
+- Requirements come from you or the ticket, never from the model's sense of what is obvious — an inferred acceptance criterion is presented as an inference and confirmed, and a ticket that is silent about error handling is an interview question rather than permission to design it
 - Phase 4–5.5 — EARS/GEARS SPEC.md authoring (includes explicit Out of Scope section and optional Decisions and Deviations); self-review gate checks AC verifiability; sub-agent spec review
 - Phase 6 — HARD-GATE: no implementation until explicit approval
 - Phase 7 — saves to `docs/specs/` (key-prefixed filename when a Jira key is present, plain slug otherwise), optional Confluence sync when a ticket is linked
@@ -149,18 +152,24 @@ Full Spec → Plan → Execute → Ship pipeline. Works from a plain feature des
 
 **`plan-writer`** — produces a `PLAN.md` from an approved `SPEC.md`:
 - Phase 0.1 — checks for an existing plan before starting
-- Phase 0.7 — codebase pre-read before the architecture interview: answers questions from code, only asks the user what the code cannot answer
-- Architecture interview → file structure proposal → architecture gate (invariant ownership, dependency direction, contracts, failure boundaries) → behavior-sized test-first tasks with fixed contracts
+- Phase 0.7 — codebase pre-read before the architecture interview: answers questions from code, only asks the user what the code cannot answer, and keeps an explicit list of what it could *not* close rather than guessing
+- Phase 1.5 — impact analysis where every row carries its evidence; "no contract at risk" counts only when the search for consumers is named
+- Architecture interview → file structure proposal → architecture gate → behavior-sized test-first tasks with fixed contracts
+- The architecture gate presents 2–3 options per decision (invariant ownership, dependency direction, contract shape, failure boundaries) with pros, cons, effort and risk, recommends one, and waits — one decision per message, so a batched approval cannot hide the one you would have pushed back on
+- Ships an `## Assumptions` table: what the plan could not verify, what it affects, and how to close it. Both executors resolve those rows before running the tasks that depend on them
 - HARD-GATE: no execution until explicit approval; optional Jira subtask creation
 
 **`task-runner`** — executes the plan with fresh subagents per task:
-- Detects already-completed tasks before dispatching
+- Detects already-completed tasks before dispatching, and resolves any open assumption a task depends on before the implementer sees it
 - Per task: implementer → spec compliance review → code quality review, loop until both pass
+- Treats an implementer's report as a claim, not a result: a report without the real command output leaves the task unverified, and "the subagent said it passed" is never enough to advance
 - Final review across the full implementation, then hands off to `branch-shipper`
 
 **`plan-executor`** — inline single-session alternative to `task-runner`
 
 **`tdd-guide`**, **`code-reviewer`**, **`worktree-setup`**, **`branch-shipper`**, **`review-receiver`** — supporting skills. All `intent-ops` skills are user-invoked (`disable-model-invocation`), so the pipeline never auto-triggers them: `worktree-setup`, `branch-shipper`, and `review-receiver` are run by you via `/intent-ops:<skill>` when a skill suggests the handoff, while `tdd-guide` and `code-reviewer` contribute by having their `references/` prompts loaded directly into the task subagents.
+
+Each authoring skill also ships a multi-pass reviewer prompt in `references/`, used as a self-check or dispatched to a subagent for an independent read. The plan reviewer works in three passes (task mechanics, cross-task coherence, coverage against the spec); the spec reviewer in four (EARS/GEARS structure, ubiquitous language, internal consistency, scope); the retro-spec reviewer targets circularity — *if the implementation were deleted, would this requirement still say what to build and why?* All three require a quoted line for every blocking finding: an objection you cannot quote is a preference, and preferences do not block.
 
 **Optional:** Atlassian MCP — only needed for Jira harvest, subtask creation, and Confluence sync. The full pipeline runs without it.
 
@@ -208,13 +217,17 @@ The same applies to `references/` files, which is where derivation is easiest to
 
 [MIT](LICENSE) © Samuel Marques — with the third-party attributions below. See [NOTICE](NOTICE) for the full notices and the complete file-by-file list.
 
-Every derived file carries an inline attribution blockquote plus `derived_from` / `source_url` frontmatter naming its upstream and the changes made.
+Every derived file carries an inline attribution blockquote plus `derived_from` / `source_url` frontmatter naming its upstream and the changes made. The one structural-influence credit below has no such frontmatter — there is no copied text to mark — so [NOTICE](NOTICE) is the whole of that attribution.
 
 ### `intent-ops` — derived from obra/superpowers (MIT)
 
 Eight files across six `intent-ops` skills are derived from the [superpowers](https://github.com/obra/superpowers) skills library by **Jesse Vincent**, MIT licensed — `branch-shipper`, `worktree-setup`, `plan-writer`, `task-runner`, `code-reviewer`, and `tdd-guide` retain upstream logic or scaffolding with substantial additions. Jesse Vincent's copyright notice is reproduced in [NOTICE](NOTICE) as the MIT License requires.
 
 The three reviewer-prompt templates in `plan-writer`, `spec-writer`, and `retro-spec` were rewritten from scratch and are no longer derived.
+
+### `intent-ops` — structurally influenced by claudikins-kernel (MIT)
+
+The planning-discipline sections added in v3.1.0 were informed by the [`brain-jam-plan`](https://github.com/elb-pr/claudikins-kernel/blob/main/skills/brain-jam-plan/SKILL.md) skill in [claudikins-kernel](https://github.com/elb-pr/claudikins-kernel) by **elb-pr**, MIT licensed. No text was copied — every sentence in those sections was written for this repository. What was adopted is structural: the "Rationalizations to Resist" / "Red Flags" section pairing and its table format, effort and risk columns on the approach comparison with an explicit *recommend one, the user decides* rule, and *never fabricate research* as a non-negotiable, which seeded the Evidence Discipline sections. Credited in [NOTICE](NOTICE) for transparency rather than because the MIT License compels it for idea-level reuse; note that two of those conventions predate the influence here, by way of obra/superpowers.
 
 ### Three skills under CC BY 4.0, not MIT
 
