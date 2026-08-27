@@ -1,6 +1,6 @@
 {
   "name": "intent-ops",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Full delivery pipeline from feature intent to merged branch — a Jira ticket is optional and enriches the flow when present. spec-writer produces formal SPEC.md documents via Socratic DDD interview, ubiquitous language glossary, bounded context mapping, and EARS/GEARS requirements syntax. plan-writer consumes an approved spec, settles the architecture decisions, and produces a behavior-sized test-first implementation plan. task-runner executes the plan with fresh subagents per task and two-stage review (spec compliance + code quality); plan-executor provides inline single-session execution. worktree-setup isolates work in a dedicated branch. tdd-guide enforces an observed red before any behavior ships, with tiered step sizes. code-reviewer dispatches focused reviewer subagents. review-receiver handles feedback with technical rigor. branch-shipper completes the branch with merge, PR, or discard. Every handoff between stages is gated on explicit approval, and every stage enforces evidence discipline: claims about the codebase carry a file:line citation, unverified beliefs are recorded as labelled assumptions instead of stated as fact, architecture decisions are presented as 2\u20133 options for the user to choose, and no step is reported complete without the command output that proves it.",
   "author": {
     "name": "Samuel Marques"

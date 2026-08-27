@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Samuel Marques
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Retro Spec Skill

@@ -7,7 +7,7 @@ derived_from: 'obra/superpowers — writing-plans'
 source_url: 'https://github.com/obra/superpowers/blob/main/skills/writing-plans/SKILL.md'
 metadata:
   author: Samuel Marques
-  version: 2.1.0
+  version: 2.2.0
 ---
 
 # Plan Writer Skill
