@@ -1,7 +1,7 @@
 Initialize or sync the project's `CLAUDE.md` and `.claude/settings.json`, then immediately map the codebase.
 
 - **First run (no `CLAUDE.md`):** creates the full file from the template, merges installed plugins' settings into `.claude/settings.json`, then runs `codebase-mapping`.
-- **Subsequent runs (`CLAUDE.md` exists):** surgically updates only the `### Rules` and `### Skills` sections inside `## Knowledge Base — Document Map` plus the top-level `## Evidence Discipline` section, leaving all other content untouched — including `### Codebase Reference` (written by `codebase-mapping`) and any user content under `### Active Plans & Specs` — re-merges installed plugins' settings into `.claude/settings.json`, then runs `codebase-mapping`.
+- **Subsequent runs (`CLAUDE.md` exists):** surgically updates only the `### Rules` and `### Skills` sections inside `## Knowledge Base — Document Map` plus the top-level `## Compaction Survival`, `## Change Discipline`, and `## Evidence Discipline` sections, leaving all other content untouched — including `### Codebase Reference` (written by `codebase-mapping`) and any user content under `### Active Plans & Specs` — re-merges installed plugins' settings into `.claude/settings.json`, then runs `codebase-mapping`.
 
 ---
 
@@ -49,6 +49,13 @@ Skills are invoked via the `Skill` tool — never read directly. Listed here for
 
 ---
 
+## Compaction Survival
+
+- **Write it down before context is lost.** Compaction can happen without warning, so keep `HANDOFF.md` in the project root current: update it at each milestone, and immediately when you notice the context degrading (forgotten decisions, re-reading the same files, losing track of the plan). Record the goal, the project invariants you must not break, decisions already made, what is done, and the next execution step.
+- **After a compaction, read it back first.** When a compaction happens (the `project-setup` hooks announce it), read `HANDOFF.md` and `.claude/handoff-snapshot.md` (the working-tree state captured just before compaction) before doing anything else, and rebuild the invariants and the next step from them rather than from the summary alone.
+
+---
+
 ## Code Standards
 
 - Always invoke the `coding-guidelines`, `cognitive-driven-development`, and `coupling-analysis` skills together when writing or changing Java code.
@@ -56,6 +63,23 @@ Skills are invoked via the `Skill` tool — never read directly. Listed here for
 - After writing code, use `coverage-driven-test-generation` to create unit tests.
 - For every new feature, add a test case in `testing.md` with objective, steps, acceptance criteria, and update the coverage matrix and changelog.
 - Code is formatted with Google Java Format (AOSP style). Run `./gradlew go` before committing.
+
+---
+
+## Change Discipline
+
+Solve the whole request with the smallest change that fully works. "Small" applies to the solution — never to leaving the change half-done.
+
+- **Map the blast radius first.** Before editing, find everything the change reaches — callers, tests, fixtures, config, exports, public contracts — and what it could break for existing users (lost or exposed data, callers that stop working). For a bug fix, search every caller of the method you touch and fix the root cause once in the shared code, not at each call site.
+- **Reuse before you write.** Prefer, in order: something that already exists in this codebase (used the way neighbouring code uses it) → the language's standard library or the framework already in use → a dependency already declared in the build file. Never add a new dependency to save a few lines.
+- **Build only what was asked.** No speculative options, flags, wrappers, or "for later" hooks. For a vague request, deliver the smallest version that does the core job. Anything you deliberately left out gets named in one line in your reply.
+- **Stay inside the existing structure.** Keep the codebase's layers, interfaces, and conventions; a smaller diff never justifies a new pattern.
+- **Shorter wins only when equally correct.** Between options of similar size, pick the one that handles the edge cases. Fewer lines that need decoding are not simpler.
+- **Moved code keeps its guards.** Code you relocate, merge, or inline keeps its validation and error handling.
+- **Mark known limits.** A deliberate shortcut gets a one-line comment in the form `LIMITATION: <what it does not handle> — revisit when <trigger>`.
+- **Never trim:** validation at trust boundaries, error handling that prevents data loss, security controls, or anything the user explicitly asked for.
+
+**Close every change with a residual-risk line:** what you skipped or did not verify, and any risk the user must know about. "Nothing skipped" is valid only when true.
 
 ---
 
@@ -146,6 +170,44 @@ Skills are invoked via the `Skill` tool — never read directly. Listed here for
 
 - **If the heading does not exist:** append the block above at the end of `## Knowledge Base — Document Map` (before the next `##` section or end of file).
 
+#### Sync `## Compaction Survival` section
+
+Locate the top-level heading `## Compaction Survival`.
+
+- **If the heading exists:** replace everything between it and the next `## ` heading (exclusive) with the block below.
+- **If the heading does not exist:** insert the block below immediately before `## Code Standards` (or before `## Change Discipline` if `## Code Standards` is absent, or at the end of the file if both are absent).
+
+```markdown
+## Compaction Survival
+
+- **Write it down before context is lost.** Compaction can happen without warning, so keep `HANDOFF.md` in the project root current: update it at each milestone, and immediately when you notice the context degrading (forgotten decisions, re-reading the same files, losing track of the plan). Record the goal, the project invariants you must not break, decisions already made, what is done, and the next execution step.
+- **After a compaction, read it back first.** When a compaction happens (the `project-setup` hooks announce it), read `HANDOFF.md` and `.claude/handoff-snapshot.md` (the working-tree state captured just before compaction) before doing anything else, and rebuild the invariants and the next step from them rather than from the summary alone.
+```
+
+#### Sync `## Change Discipline` section
+
+Locate the top-level heading `## Change Discipline`.
+
+- **If the heading exists:** replace everything between it and the next `## ` heading (exclusive) with the block below.
+- **If the heading does not exist:** insert the block below immediately before `## Evidence Discipline` (or before `## Security` if `## Evidence Discipline` is also absent, or at the end of the file if both are absent).
+
+```markdown
+## Change Discipline
+
+Solve the whole request with the smallest change that fully works. "Small" applies to the solution — never to leaving the change half-done.
+
+- **Map the blast radius first.** Before editing, find everything the change reaches — callers, tests, fixtures, config, exports, public contracts — and what it could break for existing users (lost or exposed data, callers that stop working). For a bug fix, search every caller of the method you touch and fix the root cause once in the shared code, not at each call site.
+- **Reuse before you write.** Prefer, in order: something that already exists in this codebase (used the way neighbouring code uses it) → the language's standard library or the framework already in use → a dependency already declared in the build file. Never add a new dependency to save a few lines.
+- **Build only what was asked.** No speculative options, flags, wrappers, or "for later" hooks. For a vague request, deliver the smallest version that does the core job. Anything you deliberately left out gets named in one line in your reply.
+- **Stay inside the existing structure.** Keep the codebase's layers, interfaces, and conventions; a smaller diff never justifies a new pattern.
+- **Shorter wins only when equally correct.** Between options of similar size, pick the one that handles the edge cases. Fewer lines that need decoding are not simpler.
+- **Moved code keeps its guards.** Code you relocate, merge, or inline keeps its validation and error handling.
+- **Mark known limits.** A deliberate shortcut gets a one-line comment in the form `LIMITATION: <what it does not handle> — revisit when <trigger>`.
+- **Never trim:** validation at trust boundaries, error handling that prevents data loss, security controls, or anything the user explicitly asked for.
+
+**Close every change with a residual-risk line:** what you skipped or did not verify, and any risk the user must know about. "Nothing skipped" is valid only when true.
+```
+
 #### Sync `## Evidence Discipline` section
 
 Locate the top-level heading `## Evidence Discipline`.
@@ -202,7 +264,7 @@ Skills are invoked via the `Skill` tool — never read directly. Listed here for
 
 ```
 
-Confirm: "`CLAUDE.md` synced — Rules, Skills, and Evidence Discipline sections updated."
+Confirm: "`CLAUDE.md` synced — Rules, Skills, Compaction Survival, Change Discipline, and Evidence Discipline sections updated."
 
 ---
 
