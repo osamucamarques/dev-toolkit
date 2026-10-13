@@ -86,8 +86,7 @@
   "sandbox": {
     "enabled": true,
     "autoAllowBashIfSandboxed": true,
-    "allowManagedDomainsOnly": true,
-    "allowedDomains": [],
+    "excludedCommands": ["./gradlew *"],
     "filesystem": {
       "denyRead": ["~/.ssh", "~/.gnupg", "~/.aws", "~/.config/gcloud", "~/.kube"]
     }
