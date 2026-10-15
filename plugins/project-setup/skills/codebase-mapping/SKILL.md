@@ -167,21 +167,22 @@ Load `references/output-templates.md` for the full template and token budget for
 
 After all 7 files are written, update `CLAUDE.md` with the table below. Fill in the
 **Purpose** column using the actual contents of each generated file — make each entry
-specific to this project, not generic. If a file was sparse (e.g., no integrations found),
-reflect that honestly in the purpose cell.
+specific to this project, not generic, and at most ~10 words (`CLAUDE.md` loads in every
+session; `/project-init` keeps it under 6000 characters). If a file was sparse (e.g., no
+integrations found), reflect that honestly in the purpose cell.
 
 The table to insert:
 
 ```markdown
 | File | When to load | Purpose |
 |------|--------------|---------|
-| [`docs/codebase/STACK.md`](docs/codebase/STACK.md) | Before dependency work, migrations, runtime/tooling changes | Framework versions, all dependencies, testing frameworks, dev tools |
-| [`docs/codebase/ARCHITECTURE.md`](docs/codebase/ARCHITECTURE.md) | Before changing flows, service boundaries, repositories, events, or migrations | Patterns, data flows, module boundaries |
-| [`docs/codebase/CONVENTIONS.md`](docs/codebase/CONVENTIONS.md) | Before adding or changing any code | Naming rules, file structure, error handling style, logging |
-| [`docs/codebase/STRUCTURE.md`](docs/codebase/STRUCTURE.md) | When locating a capability, config, or special directory | Full directory tree, where each domain lives, where things are configured |
-| [`docs/codebase/TESTING.md`](docs/codebase/TESTING.md) | Before adding tests, fixing tests, measuring coverage, or choosing a test command | Test frameworks, base classes, container setup, coverage exclusions, known gaps |
-| [`docs/codebase/INTEGRATIONS.md`](docs/codebase/INTEGRATIONS.md) | Before changing API clients, event handlers, database config, or background jobs | External services, API clients, configuration, authentication notes, event flows, background work |
-| [`docs/codebase/CONCERNS.md`](docs/codebase/CONCERNS.md) | Before risky changes, refactors, performance work, security review, or planning tech debt | Security issues, outdated deps, performance risks, coverage gaps — each with evidence |
+| `docs/codebase/STACK.md` | Dependency, migration, runtime/tooling work | Versions, dependencies, test frameworks, dev tools |
+| `docs/codebase/ARCHITECTURE.md` | Changing flows, service boundaries, repositories, events | Patterns, data flows, module boundaries |
+| `docs/codebase/CONVENTIONS.md` | Adding or changing any code | Naming, file layout, error handling, logging |
+| `docs/codebase/STRUCTURE.md` | Locating a capability, config, or special directory | Directory tree, where each domain lives |
+| `docs/codebase/TESTING.md` | Adding/fixing tests, coverage, choosing a test command | Test setup, base classes, coverage gaps |
+| `docs/codebase/INTEGRATIONS.md` | API clients, event handlers, DB config, background jobs | External services, auth, event flows |
+| `docs/codebase/CONCERNS.md` | Risky changes, refactors, performance, security, tech debt | Known risks and gaps, with evidence |
 ```
 
 **Placement — check these cases in order:**

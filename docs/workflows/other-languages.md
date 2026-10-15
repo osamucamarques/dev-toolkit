@@ -46,7 +46,7 @@ Then install the plugins into the current project:
 /project-init
 ```
 
-Creates (or syncs) `CLAUDE.md` with the Document Map and skill references. Restart the session after this completes.
+Creates (or syncs) a compact `CLAUDE.md` with the Document Map, change and evidence discipline, and security rules. Restart the session after this completes.
 
 ### Step 3: Map the codebase
 

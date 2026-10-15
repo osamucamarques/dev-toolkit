@@ -1,7 +1,19 @@
 {
+  "extraKnownMarketplaces": {
+    "dev-toolkit": {
+      "source": {
+        "source": "github",
+        "repo": "osamucamarques/dev-toolkit"
+      },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "skill-creator@claude-plugins-official": true,
+    "project-setup@dev-toolkit": true
+  },
+  "autoMemoryEnabled": true,
   "alwaysThinkingEnabled": false,
-  "effortLevel": "medium",
-  "autoMemoryEnabled": false,
   "permissions": {
     "allow": [
       "Bash(git pull)",

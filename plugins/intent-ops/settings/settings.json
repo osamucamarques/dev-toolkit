@@ -1,4 +1,7 @@
 {
+  "enabledPlugins": {
+    "intent-ops@dev-toolkit": true
+  },
   "permissions": {
     "allow": [
       "mcp__claude_ai_Atlassian__getAccessibleAtlassianResources",

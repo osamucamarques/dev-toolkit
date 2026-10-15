@@ -1,4 +1,7 @@
 {
+  "enabledPlugins": {
+    "java-code-standards@dev-toolkit": true
+  },
   "permissions": {
     "allow": [
       "Bash(./gradlew test:*)",

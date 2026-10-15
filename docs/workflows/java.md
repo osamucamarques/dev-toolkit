@@ -44,7 +44,7 @@ Then install the plugins into the current project:
 /project-init
 ```
 
-Creates (or syncs) `CLAUDE.md` with the Document Map, code standards, security rules, and skill/rule references. The file tells Claude what to load and when — so it doesn't flood context on every session.
+Creates (or syncs) a compact `CLAUDE.md` (under 6000 characters) with the Document Map, change and evidence discipline, and security rules, and installs the `java-code-standards` rule into `.claude/rules/code-standard.md`, which loads only when Claude works with Java files.
 
 ### Step 3: Map the codebase
 

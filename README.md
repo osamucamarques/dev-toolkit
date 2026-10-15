@@ -64,7 +64,7 @@ plugins/
     ├── rules/
     │   └── <rule-name>.md       # auto-loaded rule (path-scoped)
     └── settings/
-        └── settings.json        # permission allowlist for this plugin
+        └── settings.json        # permissions, sandbox, enabledPlugins (merged by /project-init)
 ```
 
 Skills, commands, and rules are auto-discovered from directory structure — do not list them in the manifest. A `references/` file is never auto-loaded; the `SKILL.md` names it and the agent reads it only when the workflow reaches that point.
@@ -121,7 +121,7 @@ Run these commands inside the target project's Claude Code session. For non-Java
 
 Skills activate automatically when Claude detects a matching user prompt. See each skill's `description` frontmatter for trigger conditions.
 
-Rules in `.claude/rules/` are auto-loaded for every conversation matching the rule's `paths` glob.
+Claude Code does not load a plugin's `rules/` directory itself. `/project-init` copies each installed plugin's `rules/*.md` into the project's `.claude/rules/`, where they load whenever Claude works with files matching the rule's `paths` glob.
 
 ---
 
@@ -186,7 +186,7 @@ Four coordinated skills + one rule. The three code skills must always be used to
 | `coupling-analysis` | Three-dimensional coupling model (strength × distance × volatility); classifies Intrusive / Functional / Model / Contract coupling |
 | `coverage-driven-test-generation` | JaCoCo XML analysis → MC/DC JUnit 5 + Mockito test generation; prioritizes partial branches first |
 
-The `code-standard.md` rule (auto-loaded for `src/**/*.java`) summarizes the Definition of Done, testing enforcement checklist, and **Contracts & Compatibility** requirements: idempotency (state-mutating ops must be retry-safe) and backward compatibility (no breaking API changes without a version bump).
+The `code-standard.md` rule (installed into `.claude/rules/` by `/project-init`, loaded for `src/**/*.java`) summarizes the Definition of Done, testing enforcement checklist, and **Contracts & Compatibility** requirements: idempotency (state-mutating ops must be retry-safe) and backward compatibility (no breaking API changes without a version bump).
 
 ---
 
