@@ -41,7 +41,7 @@ Then install the plugins into the current project:
 ### Step 2: Initialize CLAUDE.md
 
 ```
-/project-init
+/claude-init
 ```
 
 Creates (or syncs) a compact `CLAUDE.md` (under 6000 characters) with the Document Map, change and evidence discipline, and security rules, and installs the `java-code-standards` rule into `.claude/rules/code-standard.md`, which loads only when Claude works with Java files.
@@ -68,7 +68,7 @@ Run it again after any major structural change (new module, architecture shift).
 
 ### Step 4: Restart Claude Code
 
-After `/project-init` completes, restart the session. The new `CLAUDE.md`, rules, and skills become active. You only need to do this once per setup or after adding new plugins.
+After `/claude-init` completes, restart the session. The new `CLAUDE.md`, rules, and skills become active. You only need to do this once per setup or after adding new plugins.
 
 ---
 
@@ -218,7 +218,7 @@ Update the docs for the new TenantService
 | What you want | What to say |
 |---------------|------------|
 | Map the codebase | `/project-setup:codebase-mapping` |
-| Initialize CLAUDE.md | `/project-init` |
+| Initialize CLAUDE.md | `/claude-init` |
 | Write a spec (Jira key optional) | `/intent-ops:spec-writer PROJ-1234` |
 | Write spec from existing code | `/intent-ops:retro-spec PROJ-1234` |
 | Write the implementation plan | `/intent-ops:plan-writer <spec-path>` |

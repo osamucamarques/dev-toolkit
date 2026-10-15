@@ -12,7 +12,7 @@
     {
       "name": "project-setup",
       "source": "./plugins/project-setup",
-      "description": "Language-agnostic workspace tools: codebase-mapping produces a 7-file docs/codebase/ knowledge base, docs-writer writes and edits documentation files, /project-init initializes or syncs CLAUDE.md, /commit generates conventional commit messages."
+      "description": "Language-agnostic workspace tools: codebase-mapping produces a 7-file docs/codebase/ knowledge base, docs-writer writes and edits documentation files, /claude-init initializes or syncs CLAUDE.md, /commit generates conventional commit messages."
     },
     {
       "name": "java-code-standards",

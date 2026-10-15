@@ -4,7 +4,7 @@ description: Produces a structured codebase knowledge base (7 Markdown files in 
 license: MIT
 metadata:
   author: Samuel Marques
-  version: 1.0.0
+  version: 1.0.1
 ---
 
 # Codebase Mapping
@@ -168,7 +168,7 @@ Load `references/output-templates.md` for the full template and token budget for
 After all 7 files are written, update `CLAUDE.md` with the table below. Fill in the
 **Purpose** column using the actual contents of each generated file — make each entry
 specific to this project, not generic, and at most ~10 words (`CLAUDE.md` loads in every
-session; `/project-init` keeps it under 6000 characters). If a file was sparse (e.g., no
+session; `/claude-init` keeps it under 6000 characters). If a file was sparse (e.g., no
 integrations found), reflect that honestly in the purpose cell.
 
 The table to insert:
@@ -188,7 +188,7 @@ The table to insert:
 **Placement — check these cases in order:**
 
 **Case A — `### Codebase Reference (\`docs/codebase/\`)` already exists in `CLAUDE.md`**
-(the user ran `/project-init` before this skill — the heading is a pre-created placeholder)
+(the user ran `/claude-init` before this skill — the heading is a pre-created placeholder)
 
 - If the heading is followed immediately by the next `###` or `##` heading (empty placeholder):
   insert the table between the heading line and the next heading.

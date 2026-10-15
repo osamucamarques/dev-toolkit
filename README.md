@@ -20,7 +20,7 @@ Step-by-step guides for using the plugin stack from first setup through shipping
 **At a glance — Java:**
 1. Add marketplace (one-time): `/plugin marketplace add https://github.com/osamucamarques/dev-toolkit.git`
 2. Install plugins: `/plugin install project-setup@dev-toolkit` + `java-code-standards` + `intent-ops`
-3. `/project-init` — create or sync `CLAUDE.md`
+3. `/claude-init` — create or sync `CLAUDE.md`
 4. `/project-setup:codebase-mapping` — map the codebase into `docs/codebase/`, restart session
 5. `Spec out PROJ-1234` → approve → `Write the implementation plan` → approve → `Execute the plan with task-runner`
 6. `/commit` → `Ship this`
@@ -28,7 +28,7 @@ Step-by-step guides for using the plugin stack from first setup through shipping
 **At a glance — Other languages:**
 1. Add marketplace (one-time): `/plugin marketplace add https://github.com/osamucamarques/dev-toolkit.git`
 2. Install plugins: `/plugin install project-setup@dev-toolkit` + `intent-ops`
-3. `/project-init` → `/project-setup:codebase-mapping` → restart
+3. `/claude-init` → `/project-setup:codebase-mapping` → restart
 4. Same spec → plan → execute → ship cycle, without java-code-standards
 
 ---
@@ -64,7 +64,7 @@ plugins/
     ├── rules/
     │   └── <rule-name>.md       # auto-loaded rule (path-scoped)
     └── settings/
-        └── settings.json        # permissions, sandbox, enabledPlugins (merged by /project-init)
+        └── settings.json        # permissions, sandbox, enabledPlugins (merged by /claude-init)
 ```
 
 Skills, commands, and rules are auto-discovered from directory structure — do not list them in the manifest. A `references/` file is never auto-loaded; the `SKILL.md` names it and the agent reads it only when the workflow reaches that point.
@@ -121,7 +121,7 @@ Run these commands inside the target project's Claude Code session. For non-Java
 
 Skills activate automatically when Claude detects a matching user prompt. See each skill's `description` frontmatter for trigger conditions.
 
-Claude Code does not load a plugin's `rules/` directory itself. `/project-init` copies each installed plugin's `rules/*.md` into the project's `.claude/rules/`, where they load whenever Claude works with files matching the rule's `paths` glob.
+Claude Code does not load a plugin's `rules/` directory itself. `/claude-init` copies each installed plugin's `rules/*.md` into the project's `.claude/rules/`, where they load whenever Claude works with files matching the rule's `paths` glob.
 
 ---
 
@@ -186,7 +186,7 @@ Four coordinated skills + one rule. The three code skills must always be used to
 | `coupling-analysis` | Three-dimensional coupling model (strength × distance × volatility); classifies Intrusive / Functional / Model / Contract coupling |
 | `coverage-driven-test-generation` | JaCoCo XML analysis → MC/DC JUnit 5 + Mockito test generation; prioritizes partial branches first |
 
-The `code-standard.md` rule (installed into `.claude/rules/` by `/project-init`, loaded for `src/**/*.java`) summarizes the Definition of Done, testing enforcement checklist, and **Contracts & Compatibility** requirements: idempotency (state-mutating ops must be retry-safe) and backward compatibility (no breaking API changes without a version bump).
+The `code-standard.md` rule (installed into `.claude/rules/` by `/claude-init`, loaded for `src/**/*.java`) summarizes the Definition of Done, testing enforcement checklist, and **Contracts & Compatibility** requirements: idempotency (state-mutating ops must be retry-safe) and backward compatibility (no breaking API changes without a version bump).
 
 ---
 

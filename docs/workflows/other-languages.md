@@ -43,7 +43,7 @@ Then install the plugins into the current project:
 ### Step 2: Initialize CLAUDE.md
 
 ```
-/project-init
+/claude-init
 ```
 
 Creates (or syncs) a compact `CLAUDE.md` with the Document Map, change and evidence discipline, and security rules. Restart the session after this completes.
@@ -232,7 +232,7 @@ Update the docs for the new UserService
 | What you want | What to say |
 |---------------|------------|
 | Map the codebase | `/project-setup:codebase-mapping` |
-| Initialize CLAUDE.md | `/project-init` |
+| Initialize CLAUDE.md | `/claude-init` |
 | Write a spec (Jira key optional) | `/intent-ops:spec-writer PROJ-1234` |
 | Write spec from existing code | `/intent-ops:retro-spec PROJ-1234` |
 | Write the implementation plan | `/intent-ops:plan-writer <spec-path>` |

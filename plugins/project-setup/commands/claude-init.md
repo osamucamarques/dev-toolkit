@@ -94,7 +94,7 @@ Confirm: "`CLAUDE.md` synced — managed sections updated; removed: <list or non
 
 ### 3. Sync `.claude/settings.json` and `.claude/rules/` from installed plugins
 
-Every plugin in this marketplace may ship a `settings/settings.json` (permissions, sandbox, the marketplace registration, and the plugins it enables for the team) and a `rules/` directory (path-scoped rules). Claude Code does not load either from a plugin directly, so this step copies them into the project. Run it on every `project-init` run, not just the first.
+Every plugin in this marketplace may ship a `settings/settings.json` (permissions, sandbox, the marketplace registration, and the plugins it enables for the team) and a `rules/` directory (path-scoped rules). Claude Code does not load either from a plugin directly, so this step copies them into the project. Run it on every `claude-init` run, not just the first.
 
 1. **Find which of this marketplace's plugins are installed in this project.** Read `~/.claude/plugins/installed_plugins.json`. Its `plugins` map is keyed `"<plugin-name>@<marketplace>"`; each value is a list of install records with a `projectPath` and `installPath`. Keep only the entries whose `projectPath` matches the current project root (resolve `pwd` and compare) — a plugin installed for a different project must not leak into this one.
 2. **Collect each matched plugin's files.** For each matched entry, read `<installPath>/settings/settings.json` and every `<installPath>/rules/*.md` that exist (skip silently if absent).
@@ -103,7 +103,7 @@ Every plugin in this marketplace may ship a `settings/settings.json` (permission
    - For array values (e.g. `permissions.allow`, `permissions.ask`, `permissions.deny`, `sandbox.filesystem.denyRead`, `sandbox.excludedCommands`, `sandbox.network.allowedDomains`), take the union and de-duplicate — never drop an existing entry and never add a duplicate.
    - For scalar values (e.g. `effortLevel`, `alwaysThinkingEnabled`, `sandbox.enabled`) that already exist in the project's `.claude/settings.json`, **keep the project's existing value** — plugin defaults only fill in keys the project hasn't set.
    - If multiple installed plugins define the same scalar key and the project doesn't already set it, prefer the value from the plugin that was installed first (earliest `installedAt`), and mention the conflict in your confirmation message so the user can double check it.
-4. **Apply the forced values**, which override the keep-the-project's-value rule above so projects initialized by older `project-init` versions converge:
+4. **Apply the forced values**, which override the keep-the-project's-value rule above so projects initialized by older `claude-init` versions converge:
    - Set `autoMemoryEnabled` to `true`.
    - Remove `effortLevel` when its value is `"medium"` (the old plugin default). Keep any other value — it was set by the team, not by the plugin.
 5. Write the merged result back to `.claude/settings.json` with 2-space indentation.
